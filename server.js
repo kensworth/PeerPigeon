@@ -1,47 +1,60 @@
+var os = require('os');
 var static = require('node-static');
 var http = require('http');
-var file = new(static.Server)();
+var socketIO = require('socket.io');
+
+var fileServer = new(static.Server)();
 var app = http.createServer(function (req, res) {
-  file.serve(req, res);
+  fileServer.serve(req, res);
 }).listen(2013);
 
-var io = require('socket.io').listen(app);
+var io = socketIO.listen(app);
 io.sockets.on('connection', function (socket){
 
-	function log(){
-		var array = [">>> Message from server: "];
-	  for (var i = 0; i < arguments.length; i++) {
-	  	array.push(arguments[i]);
-	  }
+    // convenience function to log server messages on the client
+    function log(){
+		var array = [">>> Message from server:"];
+        array.push.apply(array, arguments);
 	    socket.emit('log', array);
 	}
 
 	socket.on('message', function (message) {
-		log('Got message: ', message);
-    // For a real app, should be room only (not broadcast)
+		log('Client said:', message);
+        // for a real app, would be room only (not broadcast)
 		socket.broadcast.emit('message', message);
 	});
 
 	socket.on('create or join', function (room) {
+        log('Request to create or join room ' + room);
+
 		var numClients = io.sockets.clients(room).length;
-
 		log('Room ' + room + ' has ' + numClients + ' client(s)');
-		log('Request to create or join room', room);
 
-		if (numClients == 0){
+		if (numClients === 0){
 			socket.join(room);
-			socket.emit('created', room);
-		} else if (numClients == 1) {
-			io.sockets.in(room).emit('join', room);
+			socket.emit('created', room, socket.id);
+
+		} else if (numClients === 1) {
 			socket.join(room);
-			socket.emit('joined', room);
+            socket.emit('joined', room, socket.id);
+            io.sockets.in(room).emit('ready');
+
 		} else { // max two clients
 			socket.emit('full', room);
 		}
-		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
-
 	});
 
+    socket.on('ipaddr', function () {
+        var ifaces = os.networkInterfaces();
+        for (var dev in ifaces) {
+            ifaces[dev].forEach(function (details) {
+                if (details.family=='IPv4' && details.address != '127.0.0.1') {
+                    socket.emit('ipaddr', details.address);
+                }
+          });
+        }
+    });
+
 });
+
 

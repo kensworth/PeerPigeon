@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
+    <head>
+        <meta name="keywords" content="JavaScript, WebRTC" />
+        <meta name="description" content="WebRTC codelab" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
-<meta name='description' content='WebRTC Reference App' />
-<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+        <title>PigeonRTC</title>
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body>
+        <h1>PigeonRTC</h1>
 
-<base target='_blank'>
+        <p>
+            Room URL: <br>
+            <code id="url">...</code>
+        </p>
 
-<title>WebRTC client</title>
+        <video class="camera" autoplay></video>
+        <div class="controls">
+            <canvas id="photo" style="width: 200px; height: 150px; border: 1px solid #ccc;"></canvas>
+            <p>
+                <button id="snap">snap</button>-then-<button id="send">send</button> 
+                <br> - or - <br>
+                <button id="snapAndSend">snap & send</button>
+            </p>
+        </div>
 
-<!-- <link rel='stylesheet' href='css/main.css' /> -->
+        <div class="incoming">
+            <h2>Incoming photos</h2>
+            <div id="trail"></div>
+        </div>
 
-</head>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/lib/adapter.js"></script>
+        <script src="js/main.js"></script>
 
-<body>
-
-<div id='container'>
-
-  <div id='videos'>
-    <video id='localVideo' autoplay muted></video>
-    <video id='remoteVideo' autoplay></video>
-  </div>
-
-</div>
-
-<script src='/socket.io/socket.io.js'></script>
-<script src='js/lib/adapter.js'></script>
-<script src='js/main.js'></script>
-
-</body>
+    </body>
 </html>
