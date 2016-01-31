@@ -6,10 +6,8 @@ var app = http.createServer(function (req, res) {
 }).listen(2013);
 
 var io = require('socket.io').listen(app);
-
 io.sockets.on('connection', function (socket){
 
-  // convenience function to log server messages on the client
 	function log(){
 		var array = [">>> Message from server: "];
 	  for (var i = 0; i < arguments.length; i++) {
@@ -19,8 +17,8 @@ io.sockets.on('connection', function (socket){
 	}
 
 	socket.on('message', function (message) {
-		log('Got message:', message);
-    // for a real app, would be room only (not broadcast)
+		log('Got message: ', message);
+    // For a real app, should be room only (not broadcast)
 		socket.broadcast.emit('message', message);
 	});
 
@@ -28,12 +26,12 @@ io.sockets.on('connection', function (socket){
 		var numClients = io.sockets.clients(room).length;
 
 		log('Room ' + room + ' has ' + numClients + ' client(s)');
-		log('Request to create or join room ' + room);
+		log('Request to create or join room', room);
 
-		if (numClients === 0){
+		if (numClients == 0){
 			socket.join(room);
 			socket.emit('created', room);
-		} else if (numClients === 1) {
+		} else if (numClients == 1) {
 			io.sockets.in(room).emit('join', room);
 			socket.join(room);
 			socket.emit('joined', room);
