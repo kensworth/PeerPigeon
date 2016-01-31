@@ -150,5 +150,6 @@ if (navigator.mozGetUserMedia) {
     };
   }
 } else {
+  // Sorry, Opera
   console.log("Browser does not appear to be WebRTC-capable");
 }
