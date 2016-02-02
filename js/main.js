@@ -17,7 +17,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     // Maybe redefined later based on user's webcam video stream.
     photoContextW = 300, photoContextH = 150;
 
-// Attach even handlers
+// Attach event handlers
 video.addEventListener('play', setCanvasDimensions);
 snapBtn.addEventListener('click', snapPhoto);
 sendBtn.addEventListener('click', sendPhoto);
@@ -27,6 +27,7 @@ snapAndSendBtn.addEventListener('click', snapAndSend);
 var isInitiator;
 var room = window.location.hash.substring(1);
 if (!room) {
+    //change to random phrase
     room = window.location.hash = randomToken();
 }
 

@@ -1,6 +1,6 @@
 .camera {
-    width: 320px;
-    min-height: 240px;
+    width: 640px;
+    min-height: 480px;
     float: left;
     margin: 0 20px 25px 0;
     border: 1px solid #aaa;
