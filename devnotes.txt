@@ -34,7 +34,7 @@ process:
 		image 'cleaning' ->
 
 	{
-		peerConn calls createOffer if ifInitiator is true, which creates a data channel. client2 will respond with an answer. Both offer and answer are handled in the signalingMessageCallback which checks the message.type. if it's an offer (client2 receiving offer from client1), or answer, the method will call setRemoteDescription() which changes the remote description associated with the connection. If the message is an offer, then peerConn will call createAnswer on the localSessionCreated (this is abstracted, don't worry) ->
+		peerConn calls createOffer if isInitiator is true, which creates a data channel. client2 will respond with an answer. Both offer and answer are handled in the signalingMessageCallback which checks the message.type. if it's an offer (client2 receiving offer from client1), or answer, the method will call setRemoteDescription() which changes the remote description associated with the connection. If the message is an offer, then peerConn will call createAnswer on the localSessionCreated (this is abstracted, don't worry) ->
 
 		Even though the browsers know about each other, they still can't connect due to router NATs which gives you a private IP address that is local to your network and invisible from the public internet -> STUN 
 
@@ -45,7 +45,7 @@ process:
 		peer to peer engaged!
 	}
 data channel:
-	dataChannel is set to peerCon.createDataChannel for arbitrary type name "photos" ->
+	dataChannel is set to peerCon.createDataChannel for arbitrary type name "media" ->
 
 	onDataChannelCreated is called, logging the channel, calling channel.open, and detecting which browser dependent factory to use
 

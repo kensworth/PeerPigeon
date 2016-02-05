@@ -7,13 +7,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 
     roomURL = document.getElementById('url'),
     video = document.getElementsByTagName('video')[0],
-    photo = document.getElementById('photo'),
-    //text = document.getElementById('text'),
-    photoContext = photo.getContext('2d'),
     trail = document.getElementById('trail'),
-    snapBtn = document.getElementById('snap'),
-    sendBtn = document.getElementById('sendPhoto'),
-    snapAndSendBtn = document.getElementById('snapAndSend'),
     sendTextBtn = document.getElementById('sendText'),
     // Default values for width and height of the photoContext.
     // Maybe redefined later based on user's webcam video stream.
@@ -21,9 +15,6 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 
 // Attach event handlers
 video.addEventListener('play', setCanvasDimensions);
-snapBtn.addEventListener('click', snapPhoto);
-sendBtn.addEventListener('click', sendPhoto);
-snapAndSendBtn.addEventListener('click', snapAndSend);
 sendTextBtn.addEventListener('click', sendText);
 
 
@@ -123,7 +114,6 @@ function getMediaSuccessCallback(stream) {
     window.stream = stream; // stream available to console
 
     video.src = streamURL;
-    show(snapBtn);
 }
 
 function getMediaErrorCallback(error){
@@ -177,7 +167,7 @@ function createPeerConnection(isInitiator, config) {
 
     if (isInitiator) {
         console.log('Creating Data Channel');
-        dataChannel = peerConn.createDataChannel("photos");
+        dataChannel = peerConn.createDataChannel("media");
         onDataChannelCreated(dataChannel);
 
         console.log('Creating an offer');
@@ -206,141 +196,24 @@ function onDataChannelCreated(channel) {
         console.log('channel opened!');
     };
 
-    channel.onmessage = (webrtcDetectedBrowser == 'firefox') ? 
-        receiveDataFirefoxFactory() :
-        receiveDataChromeFactory();
+    channel.onmessage = '';
 }
-
-function receiveDataChromeFactory() {
-    var buf, count;
-
-    return function onmessage(event) {
-        if (typeof event.data === 'string') {
-            buf = window.buf = new Uint8ClampedArray(parseInt(event.data));
-            count = 0;
-            console.log('Expecting a total of ' + buf.byteLength + ' bytes');
-            return;
-        }
-
-        var data = new Uint8ClampedArray(event.data);
-        buf.set(data, count);
-
-        count += data.byteLength;
-        console.log('count: ' + count);
-
-        if (count === buf.byteLength) {
-            // we're done: all data chunks have been received
-            console.log('Done. Rendering photo.');
-            renderPhoto(buf);
-        }
-    }
-}
-
-function receiveDataFirefoxFactory() {
-    var count, total, parts;
-
-    return function onmessage(event) {
-        if (typeof event.data === 'string') {
-            total = parseInt(event.data);
-            parts = [];
-            count = 0;
-            console.log('Expecting a total of ' + total + ' bytes');
-            return;
-        }
-
-        parts.push(event.data);
-        count += event.data.size;
-        console.log('Got ' + event.data.size + ' byte(s), ' + (total - count) + ' to go.');
-
-        if (count == total) {
-            console.log('Assembling payload')
-            var buf = new Uint8ClampedArray(total);
-            var compose = function(i, pos) {
-                var reader = new FileReader();
-                reader.onload = function() { 
-                    buf.set(new Uint8ClampedArray(this.result), pos);
-                    if (i + 1 == parts.length) {
-                        console.log('Done. Rendering photo.');
-                        renderPhoto(buf);
-                    } else {
-                        compose(i + 1, pos + this.result.byteLength);
-                    }
-                };
-                reader.readAsArrayBuffer(parts[i]);
-            }
-            compose(0, 0);
-        }
-    }
-}
-
 
 /**************************************************************************** 
  * Aux functions, mostly UI-related
  ****************************************************************************/
 
 function sendText() {
-    var CHUNK_LEN = 64000;
+    var CHUNK_LEN = 1000;
     var text = document.getElementById('text').value;
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         console.log('stuff to send');
-
-        /*for (var i = 0; i < n; i++) {
-            var start = i * CHUNK_LEN,
-                end = (i + 1) * CHUNK_LEN;
-            console.log(start + ' - ' + (end-1));
-            dataChannel.send();
-        }*/
-
+        if(text.length < CHUNK_LEN) {
+            dataChannel.send(text);
+            document.getElementById('text').value = '';
+        }
     }
-    document.getElementById('text').value = '';
-}
-
-function snapPhoto() {
-    photoContext.drawImage(video, 0, 0, photoContextW, photoContextH);
-    show(photo, sendBtn);
-}
-
-function sendPhoto() {
-    // Split data channel message in chunks of this byte length.
-    var CHUNK_LEN = 64000;
-
-    var img = photoContext.getImageData(0, 0, photoContextW, photoContextH),
-        len = img.data.byteLength,
-        n = len / CHUNK_LEN | 0;
-
-    console.log('Sending a total of ' + len + ' byte(s)');
-    dataChannel.send(len);
-
-    // split the photo and send in chunks of about 64KB
-    for (var i = 0; i < n; i++) {
-        var start = i * CHUNK_LEN,
-            end = (i + 1) * CHUNK_LEN;
-        console.log(start + ' - ' + (end-1));
-        dataChannel.send(img.data.subarray(start, end));
-    }
-
-    // send the reminder, if any
-    if (len % CHUNK_LEN) {
-        console.log('last ' + len % CHUNK_LEN + ' byte(s)');
-        dataChannel.send(img.data.subarray(n * CHUNK_LEN));
-    }
-}
-
-function snapAndSend() {
-    snapPhoto();
-    sendPhoto();
-}
-
-function renderPhoto(data) {
-    var canvas = document.createElement('canvas');
-    canvas.classList.add('photo');
-    trail.insertBefore(canvas, trail.firstChild);
-
-    var context = canvas.getContext('2d');
-    var img = context.createImageData(photoContextW, photoContextH);
-    img.data.set(data);
-    context.putImageData(img, 0, 0);
 }
 
 function setCanvasDimensions() {
@@ -358,18 +231,6 @@ function setCanvasDimensions() {
     // TODO: figure out right dimensions
     photoContextW = 300; //300;
     photoContextH = 150; //150;
-}
-
-function show() {
-    Array.prototype.forEach.call(arguments, function(elem){
-        elem.style.display = null;
-    });
-}
-
-function hide() {
-    Array.prototype.forEach.call(arguments, function(elem){
-        elem.style.display = 'none';
-    });
 }
 
 function randomToken() {
