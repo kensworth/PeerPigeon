@@ -14,6 +14,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     snapBtn = document.getElementById('snap'),
     sendBtn = document.getElementById('send'),
     snapAndSendBtn = document.getElementById('snapAndSend'),
+    sendMessageBtn = document.getElementById('sendMessage'),
     // Default values for width and height of the photoContext.
     // Maybe redefined later based on user's webcam video stream.
     photoContextW = 300, photoContextH = 150;
@@ -23,6 +24,8 @@ video.addEventListener('play', setCanvasDimensions);
 snapBtn.addEventListener('click', snapPhoto);
 sendBtn.addEventListener('click', sendPhoto);
 snapAndSendBtn.addEventListener('click', snapAndSend);
+sendMessageBtn.addEventListener('click', sendMessage);
+
 
 // Create a random room if not already present in the URL.
 var isInitiator;
@@ -111,7 +114,7 @@ function updateRoomURL(ipaddr) {
 
 function grabWebCamVideo() {
     console.log('Getting user media (video) ...');
-    getUserMedia({/*video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
+    getUserMedia({video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
 }
 
 function getMediaSuccessCallback(stream) {
@@ -276,7 +279,7 @@ function receiveDataFirefoxFactory() {
  ****************************************************************************/
 
 function sendMessage() {
-
+    console.log('working');
 }
 
 function snapPhoto() {
