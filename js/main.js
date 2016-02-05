@@ -8,6 +8,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     roomURL = document.getElementById('url'),
     video = document.getElementsByTagName('video')[0],
     photo = document.getElementById('photo'),
+    //text = document.getElementById('text'),
     photoContext = photo.getContext('2d'),
     trail = document.getElementById('trail'),
     snapBtn = document.getElementById('snap'),
@@ -110,7 +111,7 @@ function updateRoomURL(ipaddr) {
 
 function grabWebCamVideo() {
     console.log('Getting user media (video) ...');
-    getUserMedia({video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
+    getUserMedia({/*video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
 }
 
 function getMediaSuccessCallback(stream) {
@@ -139,7 +140,7 @@ function signalingMessageCallback(message) {
         console.log('Got offer. Sending answer to peer.');
         peerConn.setRemoteDescription(new RTCSessionDescription(message), function(){}, logError);
         peerConn.createAnswer(onLocalSessionCreated, logError);
-        
+
     } else if (message.type === 'answer') {
         console.log('Got answer.');
         peerConn.setRemoteDescription(new RTCSessionDescription(message), function(){}, logError);
@@ -273,6 +274,10 @@ function receiveDataFirefoxFactory() {
 /**************************************************************************** 
  * Aux functions, mostly UI-related
  ****************************************************************************/
+
+function sendMessage() {
+
+}
 
 function snapPhoto() {
     photoContext.drawImage(video, 0, 0, photoContextW, photoContextH);
