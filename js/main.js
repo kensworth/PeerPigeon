@@ -213,7 +213,7 @@ function addMessage(message, self) {
       newMessage.classList.add("self");
       newMessage.innerHTML = "<span class='badge'>You</span><p>" + message + "</p>";
     } else {
-      newMessage.innerHTML = "<span class='badge'>" + 'client2' + "</span><p>" + message.data + "</p>"
+      newMessage.innerHTML = "<span class='badge'>" + 'friend' + "</span><p>" + message.data + "</p>"
     }
 
     messageList.appendChild(newMessage);

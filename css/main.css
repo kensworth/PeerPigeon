@@ -11,18 +11,6 @@ body {
     padding-bottom: 40px;
 }
 
-.container {
-    max-width: 600px;
-}
-
-h2 {
-    margin-top: 20px;
-}
-
-h3 {
-    margin-top: 30px;
-}
-
 ul, ol {
     margin: 20px 0 30px;
 }
@@ -36,20 +24,6 @@ p, li {
 li {
     font-style: italic;
     margin-bottom: 0; 
-}
-
-p.intro {
-    font-size: 21px;
-}
-
-hr {
-    border-color: #ccc;
-}
-
-header h1 {
-    border-bottom: 1px solid #666;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
 }
 
 .buttons {
@@ -122,4 +96,8 @@ ul.chat-inner-messages li .badge {
 
 ul.chat-inner-messages li.self {
     text-align: right;
+}
+
+#sendText {
+    display: none;
 }
