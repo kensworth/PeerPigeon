@@ -9,13 +9,9 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     video = document.getElementsByTagName('video')[0],
     trail = document.getElementById('trail'),
     messageInput = document.getElementById('text'),
-    sendTextBtn = document.getElementById('sendText'),
-    // Default values for width and height of the photoContext.
-    // Maybe redefined later based on user's webcam video stream.
-    photoContextW = 300, photoContextH = 150;
+    sendTextBtn = document.getElementById('sendText');
 
 // Attach event handlers
-video.addEventListener('play', setCanvasDimensions);
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener("keydown", onMessageKeyDown);
 
@@ -241,23 +237,6 @@ function onMessageKeyDown(event) {
         event.preventDefault();
         sendText();
     }
-}
-
-function setCanvasDimensions() {
-    if (video.videoWidth == 0) {
-        setTimeout(setCanvasDimensions, 200);
-        return;
-    }
-    
-    console.log('video width:', video.videoWidth, 'height:', video.videoHeight)
-
-    photoContextW = video.videoWidth / 2;
-    photoContextH = video.videoHeight / 2;
-    //photo.style.width = photoContextW + 'px';
-    //photo.style.height = photoContextH + 'px';
-    // TODO: figure out right dimensions
-    photoContextW = 300; //300;
-    photoContextH = 150; //150;
 }
 
 function randomToken() {
