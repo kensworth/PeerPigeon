@@ -8,6 +8,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     roomURL = document.getElementById('url'),
     video = document.getElementsByTagName('video')[0],
     trail = document.getElementById('trail'),
+    messageInput = document.getElementById('text'),
     sendTextBtn = document.getElementById('sendText'),
     // Default values for width and height of the photoContext.
     // Maybe redefined later based on user's webcam video stream.
@@ -16,6 +17,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 // Attach event handlers
 video.addEventListener('play', setCanvasDimensions);
 sendTextBtn.addEventListener('click', sendText);
+messageInput.addEventListener("keydown", onMessageKeyDown);
 
 
 // Create a random room if not already present in the URL.
@@ -223,7 +225,7 @@ function addMessage(message, self) {
 
 function sendText() {
     var CHUNK_LEN = 1000;
-    var text = document.getElementById('text').value;
+    var text = messageInput.value;
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         if(text.length < CHUNK_LEN) {
@@ -231,6 +233,13 @@ function sendText() {
             addMessage(text, true);
             document.getElementById('text').value = '';
         }
+    }
+}
+
+function onMessageKeyDown(event) {
+    if (event.keyCode == 13) {
+        event.preventDefault();
+        sendText();
     }
 }
 
