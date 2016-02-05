@@ -196,7 +196,13 @@ function onDataChannelCreated(channel) {
         console.log('channel opened!');
     };
 
-    channel.onmessage = '';
+    channel.onmessage = handleText();
+}
+
+function handleText() {
+    return function onmessage(event) {
+        document.getElementById("textArea").value = event.data;
+    }
 }
 
 /**************************************************************************** 
