@@ -12,7 +12,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     photoContext = photo.getContext('2d'),
     trail = document.getElementById('trail'),
     snapBtn = document.getElementById('snap'),
-    sendBtn = document.getElementById('send'),
+    sendBtn = document.getElementById('sendPhoto'),
     snapAndSendBtn = document.getElementById('snapAndSend'),
     sendTextBtn = document.getElementById('sendText'),
     // Default values for width and height of the photoContext.
