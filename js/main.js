@@ -288,6 +288,7 @@ function sendMessage() {
     else {
         console.log('no whitespace');
     }
+    document.getElementById('message').value = '';
 }
 
 function snapPhoto() {
