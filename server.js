@@ -20,7 +20,7 @@ io.sockets.on('connection', function (socket){
 	}
 
 	socket.on('make room', function () {
-		log('made room');
+		log('making room');
 		var room = new xkcdPassword();
 
 	    var options = {
@@ -29,18 +29,17 @@ io.sockets.on('connection', function (socket){
 	        maxLength: 8
 	    };
 
-	    // using callbacks 
-	    room.generate(options, function(err, result) {
-	    	room = '';
-		    for(i = 0; i < result.length; i++) {
-		        room += result[i];
+		room.generate(options, function(err, result) {
+			var generatedRoom = '';
+			for(i = 0; i < result.length; i++) {
+		        generatedRoom += result[i];
 		        if(i != result.length - 1) {
-		        	room += '-';
+		        	generatedRoom += '-';
 		        }
 		    }
-	        log(room);
-	    });
-		socket.emit('created room', room);
+
+			socket.emit('created room', generatedRoom);
+		});
 	});
 
 	socket.on('message', function (message) {

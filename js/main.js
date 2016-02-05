@@ -26,14 +26,14 @@ var socket = io.connect();
 var isInitiator;
 var room = location.pathname;
 if (room == '/') {
-    console.log('not room');
+    console.log('not a room');
     //change to random phrase
     socket.emit('make room');
 }
 
 socket.on('created room', function(room) {
-
-    console.log('created room');
+    console.log(room);
+    console.log('created room!');
 });
 
 socket.on('ipaddr', function (ipaddr) {
