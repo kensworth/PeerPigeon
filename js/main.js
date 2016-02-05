@@ -139,7 +139,7 @@ function signalingMessageCallback(message) {
         console.log('Got offer. Sending answer to peer.');
         peerConn.setRemoteDescription(new RTCSessionDescription(message), function(){}, logError);
         peerConn.createAnswer(onLocalSessionCreated, logError);
-
+        
     } else if (message.type === 'answer') {
         console.log('Got answer.');
         peerConn.setRemoteDescription(new RTCSessionDescription(message), function(){}, logError);

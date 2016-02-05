@@ -44,6 +44,16 @@ process:
 
 		peer to peer engaged!
 	}
+data channel:
+	dataChannel is set to peerCon.createDataChannel for arbitrary type name "photos" ->
+
+	onDataChannelCreated is called, logging the channel, calling channel.open, and detecting which browser dependent factory to use
+
+	for photos, snapPhoto() calls photoContext's (photo.getContext('2d')) drawImage, which calls show(). ->
+
+	sendPhoto() defines a chunk length to be 64kb, divides the photo's data into pieces 64kb long, and sends them piece by piece over the data channel using dataChannel.send(img.data.subarray(start, end))
+
+
 
 
 
