@@ -14,7 +14,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     snapBtn = document.getElementById('snap'),
     sendBtn = document.getElementById('send'),
     snapAndSendBtn = document.getElementById('snapAndSend'),
-    sendMessageBtn = document.getElementById('sendMessage'),
+    sendTextBtn = document.getElementById('sendText'),
     // Default values for width and height of the photoContext.
     // Maybe redefined later based on user's webcam video stream.
     photoContextW = 300, photoContextH = 150;
@@ -24,7 +24,7 @@ video.addEventListener('play', setCanvasDimensions);
 snapBtn.addEventListener('click', snapPhoto);
 sendBtn.addEventListener('click', sendPhoto);
 snapAndSendBtn.addEventListener('click', snapAndSend);
-sendMessageBtn.addEventListener('click', sendMessage);
+sendTextBtn.addEventListener('click', sendText);
 
 
 // Create a random room if not already present in the URL.
@@ -203,7 +203,7 @@ function onDataChannelCreated(channel) {
     console.log('onDataChannelCreated:', channel);
 
     channel.onopen = function () {
-        console.log('CHANNEL opened!!!');
+        console.log('channel opened!');
     };
 
     channel.onmessage = (webrtcDetectedBrowser == 'firefox') ? 
@@ -278,17 +278,22 @@ function receiveDataFirefoxFactory() {
  * Aux functions, mostly UI-related
  ****************************************************************************/
 
-function sendMessage() {
+function sendText() {
     var CHUNK_LEN = 64000;
-    var message = document.getElementById('message').value;
-    var whiteSpaceRegEx = /^\s*$/.test(message);
-    if(whiteSpaceRegEx) {
-        console.log('whitespace');
+    var text = document.getElementById('text').value;
+    var whiteSpaceRegEx = /^\s*$/.test(text);
+    if(!whiteSpaceRegEx) {
+        console.log('stuff to send');
+
+        /*for (var i = 0; i < n; i++) {
+            var start = i * CHUNK_LEN,
+                end = (i + 1) * CHUNK_LEN;
+            console.log(start + ' - ' + (end-1));
+            dataChannel.send();
+        }*/
+
     }
-    else {
-        console.log('no whitespace');
-    }
-    document.getElementById('message').value = '';
+    document.getElementById('text').value = '';
 }
 
 function snapPhoto() {
@@ -310,7 +315,7 @@ function sendPhoto() {
     // split the photo and send in chunks of about 64KB
     for (var i = 0; i < n; i++) {
         var start = i * CHUNK_LEN,
-            end = (i+1) * CHUNK_LEN;
+            end = (i + 1) * CHUNK_LEN;
         console.log(start + ' - ' + (end-1));
         dataChannel.send(img.data.subarray(start, end));
     }
