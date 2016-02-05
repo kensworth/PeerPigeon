@@ -196,13 +196,31 @@ function onDataChannelCreated(channel) {
         console.log('channel opened!');
     };
 
-    channel.onmessage = handleText();
+    channel.onmessage = function(message) {
+        addMessage(message);
+    }
 }
 
 function handleText() {
     return function onmessage(event) {
         document.getElementById("textArea").value = event.data;
     }
+}
+
+function addMessage(message, self) {
+    var messageList = document.querySelector(".chat-messages");
+
+    var newMessage = document.createElement("li");
+    newMessage.classList.add(".item");
+
+    if (self) {
+      newMessage.classList.add("self");
+      newMessage.innerHTML = "<span class='badge'>You</span><p>" + message + "</p>";
+    } else {
+      newMessage.innerHTML = "<span class='badge'>" + 'client2' + "</span><p>" + message + "</p>"
+    }
+
+    messageList.appendChild(newMessage);
 }
 
 /**************************************************************************** 
@@ -217,6 +235,7 @@ function sendText() {
         console.log('stuff to send');
         if(text.length < CHUNK_LEN) {
             dataChannel.send(text);
+            addMessage(text, true);
             document.getElementById('text').value = '';
         }
     }
