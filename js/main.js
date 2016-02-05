@@ -279,7 +279,15 @@ function receiveDataFirefoxFactory() {
  ****************************************************************************/
 
 function sendMessage() {
-    console.log('working');
+    var CHUNK_LEN = 64000;
+    var message = document.getElementById('message').value;
+    var whiteSpaceRegEx = /^\s*$/.test(message);
+    if(whiteSpaceRegEx) {
+        console.log('whitespace');
+    }
+    else {
+        console.log('no whitespace');
+    }
 }
 
 function snapPhoto() {
