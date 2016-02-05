@@ -8,13 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/webrtc/codelab"
+    "url": "https://github.com/kensworth/pigeonRTC"
   },
   "keywords": [
     "webrtc",
-    "codelab"
   ],
-  "author": "webrtc",
+  "author": "Kenneth zhang",
   "license": "MIT",
   "dependencies": {
     "node-static": "~0.7.1",

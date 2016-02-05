@@ -1,3 +1,4 @@
+// JavaScript shim to abstract away browser differences and spec changes
 var RTCPeerConnection = null;
 var getUserMedia = null;
 var attachMediaStream = null;
