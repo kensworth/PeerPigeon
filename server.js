@@ -2,6 +2,7 @@ var os = require('os');
 var static = require('node-static');
 var http = require('http');
 var socketIO = require('socket.io');
+var xkcdPassword = require('xkcd-password');
 
 var fileServer = new(static.Server)();
 var app = http.createServer(function (req, res) {
@@ -17,6 +18,30 @@ io.sockets.on('connection', function (socket){
         array.push.apply(array, arguments);
 	    socket.emit('log', array);
 	}
+
+	socket.on('make room', function () {
+		log('made room');
+		var room = new xkcdPassword();
+
+	    var options = {
+	        numWords: 4,
+	        minLength: 5,
+	        maxLength: 8
+	    };
+
+	    // using callbacks 
+	    room.generate(options, function(err, result) {
+	    	room = '';
+		    for(i = 0; i < result.length; i++) {
+		        room += result[i];
+		        if(i != result.length - 1) {
+		        	room += '-';
+		        }
+		    }
+	        log(room);
+	    });
+		socket.emit('created room', room);
+	});
 
 	socket.on('message', function (message) {
 		log('Client said:', message);
@@ -57,5 +82,3 @@ io.sockets.on('connection', function (socket){
     });
 
 });
-
-

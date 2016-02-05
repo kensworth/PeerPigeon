@@ -15,22 +15,26 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener("keydown", onMessageKeyDown);
 
-
-// Create a random room if not already present in the URL.
-var isInitiator;
-var room = window.location.hash.substring(1);
-if (!room) {
-    //change to random phrase
-    room = window.location.hash = randomToken();
-}
-
-
 /****************************************************************************
  * Signaling server 
  ****************************************************************************/
 
 // Connect to the signaling server
 var socket = io.connect();
+
+// Create a random room if not already present in the URL.
+var isInitiator;
+var room = location.pathname;
+if (room == '/') {
+    console.log('not room');
+    //change to random phrase
+    socket.emit('make room');
+}
+
+socket.on('created room', function(room) {
+
+    console.log('created room');
+});
 
 socket.on('ipaddr', function (ipaddr) {
     console.log('Server IP address is: ' + ipaddr);
@@ -51,7 +55,7 @@ socket.on('joined', function (room, clientId) {
 
 socket.on('full', function (room) {
     alert('Room "' + room + '" is full. We will create a new room for you.');
-    window.location.hash = '';
+    window.location.pathname = '/';
     window.location.reload();
 });
 
@@ -237,10 +241,6 @@ function onMessageKeyDown(event) {
         event.preventDefault();
         sendText();
     }
-}
-
-function randomToken() {
-    return Math.floor((1 + Math.random()) * 1e16).toString(16).substring(1);
 }
 
 function logError(err) {

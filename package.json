@@ -1,7 +1,7 @@
 {
-  "name": "codelab",
+  "name": "PigeonRTC",
   "version": "0.0.1",
-  "description": "WebRTC codelab",
+  "description": "WebRTC P2P Video, Chat, and File Transfer",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,13 +11,14 @@
     "url": "https://github.com/kensworth/pigeonRTC"
   },
   "keywords": [
-    "webrtc",
+    "webrtc"
   ],
-  "author": "Kenneth zhang",
+  "author": "Kenneth Zhang",
   "license": "MIT",
   "dependencies": {
     "node-static": "~0.7.1",
     "socket.io": "~0.9.16",
-    "express": "~3.4.0"
+    "express": "~3.4.0",
+    "xkcd-password": "^1.2.0"
   }
 }
