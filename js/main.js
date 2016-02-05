@@ -201,14 +201,8 @@ function onDataChannelCreated(channel) {
     }
 }
 
-function handleText() {
-    return function onmessage(event) {
-        document.getElementById("textArea").value = event.data;
-    }
-}
-
 function addMessage(message, self) {
-    var messageList = document.querySelector(".chat-messages");
+    var messageList = document.querySelector(".chat-inner-messages");
 
     var newMessage = document.createElement("li");
     newMessage.classList.add(".item");
@@ -217,7 +211,7 @@ function addMessage(message, self) {
       newMessage.classList.add("self");
       newMessage.innerHTML = "<span class='badge'>You</span><p>" + message + "</p>";
     } else {
-      newMessage.innerHTML = "<span class='badge'>" + 'client2' + "</span><p>" + message + "</p>"
+      newMessage.innerHTML = "<span class='badge'>" + 'client2' + "</span><p>" + message.data + "</p>"
     }
 
     messageList.appendChild(newMessage);
@@ -232,7 +226,6 @@ function sendText() {
     var text = document.getElementById('text').value;
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
-        console.log('stuff to send');
         if(text.length < CHUNK_LEN) {
             dataChannel.send(text);
             addMessage(text, true);

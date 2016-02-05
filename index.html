@@ -7,6 +7,7 @@
 
         <title>PigeonRTC</title>
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     </head>
     <body>
         <h1>PigeonRTC</h1>
@@ -18,13 +19,20 @@
 
         <video class="camera" autoplay></video>
 
-        <ul class="chat-messages">
-            <li class="item" data-remove="true">No chat messages available</li>
-        </ul>
+        <!-- WebRTC demo -->
+        <div class="chat-app">
+          <div class="chat-inner">
+            <div class="chat-inner-input">
+              <input name="message" id="text" class="chat-inner-message-input form-control" placeholder="Message"></input>
+              <button id="sendText" class="chat-inner-send btn btn-primary">Send</button>
+            </div>
+            <ul class="chat-inner-messages list-group">
+            </ul>
+          </div>
+        </div>
+        <!-- /End WebRTC demo -->
 
-        <br> message: <br>
-        <input type="text" id="text" autocomplete="off" size="35"><br>
-        <button id="sendText">send message</button>
+        
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/lib/adapter.js"></script>

@@ -6,20 +6,141 @@
     border: 1px solid #aaa;
 }
 
-.incoming {
-    clear: both;
-    padding-top: 0.7em;
-    border-top: 0.1em solid #ccc;
+body {
+  background: #f4f4f4;
+  padding-bottom: 40px;
 }
 
-.incoming h2 {
-    margin: 0 0 0.3em 0;
+.container {
+  max-width: 600px;
 }
 
-.photo {
-    display: inline-block; 
-    margin: 1em; 
-    width: 200px; 
-    height: 150px; 
-    border: 1px solid #ccc;
+h2 {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-top: 30px;
+}
+
+ul, ol {
+  margin: 20px 0 30px;
+}
+
+p, li {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 200;
+}
+
+li {
+  font-style: italic;
+  margin-bottom: 0; 
+}
+
+p.intro {
+  font-size: 21px;
+}
+
+hr {
+  border-color: #ccc;
+}
+
+header h1 {
+  border-bottom: 1px solid #666;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.buttons {
+  margin: 20px 0;
+  overflow: auto;
+}
+
+.buttons .btn {
+  float: left;
+  font-size: larger;
+  padding: 0.8em 1.5em;
+  width: 49%;
+}
+
+  .buttons .btn:last-child {
+    margin-left: 2%;
+  }
+
+.chat-app {
+  background: #ddd;
+  border-radius: 6px;
+  margin: 20px 0;
+  padding: 15px;
+}
+
+.chat-app button.btn {
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 0 0 5px;
+  padding: 7px 20px;
+  line-height: normal;
+}
+
+.chat-app .form-control {
+  display: inline-block;
+  float: left;
+  width: 372px;
+}
+
+.chat-app .message-input {
+  height: 34px;
+  width: 459px;
+}
+
+.demo-connect,
+.chat-inner-input {
+  overflow: auto;
+}
+
+.demo-connect .btn {
+  float: left;
+}
+
+ul.chat-inner-messages {
+  border-top: 1px solid #aaa;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  list-style-type: none;
+}
+
+  ul.chat-inner-messages li {
+    
+  }
+
+  ul.chat-inner-messages li p {
+    font-size: 16px;
+    margin: 5px 0 0;
+  }
+
+  ul.chat-inner-messages li .badge {
+    float: none;
+  }
+
+  ul.chat-inner-messages li.self {
+    text-align: right;
+  }
+
+  ul.chat-inner-messages li.self .badge {
+    
+  }
+
+.chat-app footer {
+  border-top: 1px solid #aaa;
+  color: #666;
+  font-family: Arial, sans-serif;
+  font-size: smaller;
+  margin-top: 10px;
+  padding-top: 5px;
+}
+
+.chat-app .inactive {
+  display: none;
 }
