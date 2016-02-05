@@ -1,9 +1,3 @@
-socket.io
-	server.js is the backend script, main.js is the frontend script
-	the frontend and backend both 'emit' events to each other through socket.emit, which allow for appropriate responses via socket.on
-signaling and stun
-	first (intuition), http request is sent to the server.
-	you get back a url to send to a peer, who travels to that location. You or that peer (not sure) first sends an offer (encryption details, video specs, etc) through websockets + signaling server to the other peer, and then that peer replies with an answer confirming reception. then both sides send a message to the stun server to find out real ip and port that was opened by the router (called ice candidate). then we send ice candidates across and P2P is engaged!
 process: 	
 	client1 http to server.js ->
 
