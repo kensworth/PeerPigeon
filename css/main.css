@@ -47,7 +47,8 @@ li {
     border-radius: 6px;
     padding: 15px;
     margin: 0 auto;
-    width: 60%;
+    width: 600px;
+    float: center;
 }
 
 .chat-app button.btn {
