@@ -24,16 +24,19 @@ var socket = io.connect();
 
 // Create a random room if not already present in the URL.
 var isInitiator;
-var room = location.pathname;
-if (room == '/') {
-    console.log('not a room');
-    //change to random phrase
+var room = window.location.hash.substring(1);
+if (!room) {
     socket.emit('make room');
 }
+else {
+    socket.emit('create or join', room);
+}
 
-socket.on('created room', function(room) {
-    console.log(room);
-    console.log('created room!');
+socket.on('created room', function(generatedRoom) {
+    room = generatedRoom;
+    room = window.location.hash = generatedRoom;
+    console.log('created room: ' + room);
+    socket.emit('create or join', room);
 });
 
 socket.on('ipaddr', function (ipaddr) {
@@ -55,7 +58,7 @@ socket.on('joined', function (room, clientId) {
 
 socket.on('full', function (room) {
     alert('Room "' + room + '" is full. We will create a new room for you.');
-    window.location.pathname = '/';
+    window.location.hash = '';
     window.location.reload();
 });
 
@@ -71,9 +74,6 @@ socket.on('message', function (message){
     console.log('Client received message:', message);
     signalingMessageCallback(message);
 });
-
-// Join a room
-socket.emit('create or join', room);
 
 if (location.hostname.match(/localhost|127\.0\.0/)) {
     socket.emit('ipaddr');
@@ -95,7 +95,7 @@ function updateRoomURL(ipaddr) {
     if (!ipaddr) {
         url = location.href
     } else {
-        url = location.protocol + '//' + ipaddr + ':2013/#' + room
+        url = location.protocol + '//' + ipaddr + ':2013/' + room
     }
     roomURL.innerHTML = url;
 }

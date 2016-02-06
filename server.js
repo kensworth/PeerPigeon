@@ -20,7 +20,6 @@ io.sockets.on('connection', function (socket){
 	}
 
 	socket.on('make room', function () {
-		log('making room');
 		var room = new xkcdPassword();
 
 	    var options = {
@@ -37,7 +36,6 @@ io.sockets.on('connection', function (socket){
 		        	generatedRoom += '-';
 		        }
 		    }
-
 			socket.emit('created room', generatedRoom);
 		});
 	});
