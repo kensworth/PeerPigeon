@@ -2,6 +2,10 @@
   "name": "PigeonRTC",
   "version": "0.0.1",
   "description": "WebRTC P2P Video, Chat, and File Transfer",
+  "engines": {
+    "node": "v0.10.32",
+    "npm": "3.3.10"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
