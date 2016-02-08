@@ -7,7 +7,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 
     roomURL = document.getElementById('url'),
     remoteVideo = document.getElementById('remoteVideo'),
-    localVideo = document.getElementById('remoteVideo'),
+    localVideo = document.getElementById('localVideo'),
     trail = document.getElementById('trail'),
     messageInput = document.getElementById('text'),
     sendTextBtn = document.getElementById('sendText');
