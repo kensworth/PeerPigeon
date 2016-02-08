@@ -6,7 +6,8 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 // {"url":"stun:stun.services.mozilla.com"}
 
     roomURL = document.getElementById('url'),
-    video = document.getElementsByTagName('video')[0],
+    importVideo = document.getElementsByTagName('video')[0],
+    video = document.getElementsByTagName('video')[1],
     trail = document.getElementById('trail'),
     messageInput = document.getElementById('text'),
     sendTextBtn = document.getElementById('sendText');
@@ -107,7 +108,7 @@ function updateRoomURL(ipaddr) {
 
 function grabWebCamVideo() {
     console.log('Getting user media (video) ...');
-    getUserMedia({/*video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
+    getUserMedia({video: true, audio: true}, getMediaSuccessCallback, getMediaErrorCallback);
 }
 
 function getMediaSuccessCallback(stream) {
