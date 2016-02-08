@@ -2,6 +2,7 @@
     width: 360px;
     min-height: 270px;
     float: left;
+    position: fixed;
     margin: 0 20px 25px 0;
     border: 1px solid #aaa;
     clear:both;

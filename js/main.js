@@ -6,8 +6,8 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
 // {"url":"stun:stun.services.mozilla.com"}
 
     roomURL = document.getElementById('url'),
-    importVideo = document.getElementsByTagName('video')[0],
-    video = document.getElementsByTagName('video')[1],
+    remoteVideo = document.getElementById('remoteVideo'),
+    localVideo = document.getElementById('remoteVideo'),
     trail = document.getElementById('trail'),
     messageInput = document.getElementById('text'),
     sendTextBtn = document.getElementById('sendText');
@@ -116,7 +116,7 @@ function getMediaSuccessCallback(stream) {
     console.log('getUserMedia video stream URL:', streamURL);
     window.stream = stream; // stream available to console
 
-    video.src = streamURL;
+    localVideo.src = streamURL;
 }
 
 function getMediaErrorCallback(error){
