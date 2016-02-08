@@ -16,8 +16,10 @@
             Room URL: <br>
             <code id="url">...</code>
         </p>
-
-        <video id="remoteVideo" class="camera" autoplay></video>
+        <div>
+            <video id="remoteVideo" class="camera" autoplay></video>
+            <video id="localVideo" class="camera" autoplay muted></video>
+        </div>
 
         <div class="chat-app">
           <div class="chat-inner">
@@ -30,7 +32,7 @@
           </div>
         </div>
 
-        <video id="localVideo" class="camera" autoplay></video>
+        
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/lib/adapter.js"></script>
