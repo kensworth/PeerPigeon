@@ -1,6 +1,6 @@
 .camera {
-    width: 640px;
-    min-height: 480px;
+    width: 480px;
+    min-height: 360px;
     float: left;
     margin: 0 20px 25px 0;
     border: 1px solid #aaa;
@@ -48,7 +48,7 @@ li {
     padding: 15px;
     margin: 0 auto;
     width: 600px;
-    float: center;
+    float: left;
 }
 
 .chat-app button.btn {

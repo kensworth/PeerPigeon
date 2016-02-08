@@ -107,7 +107,7 @@ function updateRoomURL(ipaddr) {
 
 function grabWebCamVideo() {
     console.log('Getting user media (video) ...');
-    getUserMedia({video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
+    getUserMedia({/*video: true, /*audio: true*/}, getMediaSuccessCallback, getMediaErrorCallback);
 }
 
 function getMediaSuccessCallback(stream) {
