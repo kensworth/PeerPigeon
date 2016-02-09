@@ -1,6 +1,6 @@
 .camera {
-    width: 360px;
-    min-height: 270px;
+    width: 500px;
+    min-height: 375px;
     margin: 0 20px 25px 0;
     border: 1px solid #aaa;
     float: left;
@@ -48,7 +48,7 @@ li {
     border-radius: 6px;
     padding: 15px;
     overflow: auto;
-    height: 500px;
+    height: 720px;
     width: 600px;
     overflow: auto;
 }
@@ -65,12 +65,7 @@ li {
 .chat-app .form-control {
     display: inline-block;
     float: left;
-    width: 372px;
-}
-
-.chat-app .message-input {
-    height: 34px;
-    width: 459px;
+    width: 600px;
 }
 
 .demo-connect,
