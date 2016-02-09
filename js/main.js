@@ -133,9 +133,9 @@ getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
 
-if (location.hostname != "localhost") {
+/*if (location.hostname != "localhost") {
   requestTurn('');
-}
+}*/
 
 function maybeStart() {
   if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
