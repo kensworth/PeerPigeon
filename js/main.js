@@ -37,6 +37,7 @@ else {
 socket.on('created room', function(generatedRoom) {
     room = generatedRoom;
     room = window.location.hash = generatedRoom;
+    roomURL.innerHTML = location.href;
     console.log('created room: ' + room);
     socket.emit('create or join', room);
 });
