@@ -9,6 +9,7 @@ var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
     remoteVideo = document.getElementById('remoteVideo'),
     localVideo = document.getElementById('localVideo'),
     trail = document.getElementById('trail'),
+    chatInner = document.getElementById('chatInner');
     messageInput = document.getElementById('text'),
     sendTextBtn = document.getElementById('sendText');
 
@@ -218,6 +219,8 @@ function addMessage(message, self) {
     }
 
     messageList.appendChild(newMessage);
+
+    chatInner.scrollTop = chatInner.scrollHeight;
 }
 
 /**************************************************************************** 
