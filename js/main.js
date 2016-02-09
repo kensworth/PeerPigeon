@@ -133,9 +133,9 @@ getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
 
-/*if (location.hostname != "localhost") {
+if (location.hostname != "localhost") {
   requestTurn('');
-}*/
+}
 
 function maybeStart() {
   if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
@@ -250,7 +250,6 @@ function requestTurn(turn_url) {
   }
   if (!turnExists) {
     console.log('Getting TURN server from ', turn_url);
-    // No TURN server. Get one from computeengineondemand.appspot.com:
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(){
       if (xhr.readyState === 4 && xhr.status === 200) {
