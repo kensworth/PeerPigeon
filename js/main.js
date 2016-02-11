@@ -128,7 +128,7 @@ function handleUserMediaError(error){
   console.log('getUserMedia error: ', error);
 }
 
-var constraints = {video: true};
+var constraints = {video: true, audio: true};
 getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
@@ -422,4 +422,4 @@ function onMessageKeyDown(event) {
 /**************************************************************************** 
  * Aux Functions
  ****************************************************************************/
- 
+
