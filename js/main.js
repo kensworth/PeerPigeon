@@ -40,10 +40,7 @@ var sdpConstraints = {'mandatory': {
 
 var room = location.pathname.substring(1);
 if (room === '') {
-//  room = prompt('Enter room name:');
-  room = 'foo';
-} else {
-  //
+  room = prompt('Enter room name:');
 }
 
 var socket = io.connect();
@@ -435,7 +432,7 @@ function updateRoomURL(ipaddr) {
     if (!ipaddr) {
         url = location.href
     } else {
-        url = location.protocol + '//' + ipaddr + ':2013/' + room
+        url = location.protocol + '//' + ipaddr + ':2014/' + room
     }
     roomURL.innerHTML = url;
 }
