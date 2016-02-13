@@ -3,6 +3,7 @@
     height: 30vh;
     margin: 0 20px 25px 0;
     background-color: black;
+    border-radius: 6px;
     float: left;
     clear: both;
 }

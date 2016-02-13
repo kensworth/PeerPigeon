@@ -53,6 +53,11 @@ if (room !== '') {
   socket.emit('create or join', room);
 }
 
+socket.on('ipaddr', function (ipaddr) {
+    console.log('Server IP address is: ' + ipaddr);
+    updateRoomURL(ipaddr);
+});
+
 socket.on('created', function (room){
   console.log('Created room ' + room);
   isInitiator = true;
@@ -77,7 +82,9 @@ socket.on('log', function (array){
   console.log.apply(console, array);
 });
 
-////////////////////////////////////////////////
+/****************************************************************************
+ * Server Messaging
+ ****************************************************************************/
 
 function sendMessage(message){
     console.log('Client sending message: ', message);
@@ -377,7 +384,7 @@ function removeCN(sdpLines, mLineIndex) {
 }
 
 /**************************************************************************** 
- * Messaging Functions
+ * Text Messaging Functions
  ****************************************************************************/
 
 function addMessage(message, self) {
@@ -423,4 +430,13 @@ function onMessageKeyDown(event) {
  * Aux Functions
  ****************************************************************************/
 
+function updateRoomURL(ipaddr) {
+    var url;
+    if (!ipaddr) {
+        url = location.href
+    } else {
+        url = location.protocol + '//' + ipaddr + ':2013/' + room
+    }
+    roomURL.innerHTML = url;
+}
 
