@@ -64,6 +64,8 @@ socket.on('created', function (room){
 
 socket.on('full', function (room){
   console.log('Room ' + room + ' is full');
+  serverMessage('This room is full, please enter a different room name below.');
+  room = '';
 });
 
 socket.on('join', function (room){
