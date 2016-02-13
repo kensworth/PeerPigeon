@@ -59,6 +59,7 @@ socket.on('ipaddr', function (ipaddr) {
 socket.on('created', function (room){
   console.log('Created room ' + room);
   isInitiator = true;
+  serverMessage('Success! Room created at ' + location.href + room);
 });
 
 socket.on('full', function (room){
@@ -74,6 +75,7 @@ socket.on('join', function (room){
 socket.on('joined', function (room){
   console.log('This peer has joined room ' + room);
   isChannelReady = true;
+  serverMessage('Success! Joined room at ' + location.href);
 });
 
 socket.on('log', function (array){
