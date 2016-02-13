@@ -38,15 +38,16 @@ var sdpConstraints = {'mandatory': {
  * Signaling server 
  ****************************************************************************/
 
-var room = location.pathname.substring(1);
+var room = window.location.hash;
 if (room === '') {
-  room = prompt('Enter room name:');
+  serverMessage('You\'ve connected to an empty room. Please enter a room name below.');
 }
 
 var socket = io.connect();
 
 if (room !== '') {
   console.log('Create or join room', room);
+  console.log(room);
   socket.emit('create or join', room);
 }
 
@@ -78,6 +79,10 @@ socket.on('joined', function (room){
 socket.on('log', function (array){
   console.log.apply(console, array);
 });
+
+if (location.hostname.match(/localhost|127\.0\.0/)) {
+  socket.emit('ipaddr');
+}
 
 /****************************************************************************
  * Server Messaging
@@ -402,6 +407,31 @@ function addMessage(message, self) {
     chatInner.scrollTop = chatInner.scrollHeight;
 }
 
+function serverMessage(message) {
+  var messageList = document.querySelector(".chat-inner-messages");
+  var newMessage = document.createElement("li");
+  newMessage.classList.add(".item");
+
+  newMessage.innerHTML = "<span class='badge'>" + 'Message from Server' + "</span><p><b>" + message + "</b></p>"
+  messageList.appendChild(newMessage);
+
+  chatInner.scrollTop = chatInner.scrollHeight;
+}
+
+function createRoomName() {
+    var MAX_LEN = 100;
+    var text = messageInput.value;
+    var whiteSpaceRegEx = /^\s*$/.test(text);
+    if(!whiteSpaceRegEx) {
+        if(text.length < MAX_LEN) {
+            room = '#' + text;
+            roomURL.innerHTML = location.href + room;
+            socket.emit('create or join', room);
+            getUserMedia(constraints, handleUserMedia, handleUserMediaError);
+            document.getElementById('text').value = '';
+        }
+    }
+}
 
 function sendText() {
     var CHUNK_LEN = 1000;
@@ -419,7 +449,12 @@ function sendText() {
 function onMessageKeyDown(event) {
     if (event.keyCode == 13) {
         event.preventDefault();
-        sendText();
+        if(room === '') {
+          createRoomName();
+        }
+        else {
+          sendText();
+        }
     }
 }
 
