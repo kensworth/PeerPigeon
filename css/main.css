@@ -1,7 +1,7 @@
 .camera {
-    width: 40vw;
+    width: 100%;
+    min-width: 100%;
     height: 30vh;
-    margin: 0 20px 25px 0;
     background-color: black;
     border-radius: 6px;
     float: left;
@@ -56,7 +56,6 @@ li {
     padding: 15px;
     overflow: auto;
     height: 60vh;
-    width: 40vw;
     overflow: auto;
 }
 
@@ -72,7 +71,7 @@ li {
 .chat-app .form-control {
     display: inline-block;
     float: left;
-    width: 40vw;
+    margin-right:20px;
 }
 
 .demo-connect,
@@ -107,3 +106,43 @@ ul.chat-inner-messages li.self {
 #sendText {
     display: none;
 }
+
+.video-container {
+    padding: 0px 20px 20px;
+    width: 100%;
+    float:left;
+}
+
+.content-body,.content-head  {
+    max-width: 94rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+.video-app {
+    width: 50%;
+    float:left;
+    display:inline;
+}
+
+.chat-half {
+    width: 50%;
+    float:left;
+    display:inline;
+}
+
+.chat-app {
+
+    padding-right: 20px;
+}
+.content-head {
+    padding: 20px;
+    position: relative;
+}
+
+.room-data {
+    position: absolute;
+    top:20px;
+    right:0px;
+    margin-top: 20px;
+}
+
