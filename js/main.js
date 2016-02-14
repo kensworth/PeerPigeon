@@ -39,13 +39,13 @@ var sdpConstraints = {'mandatory': {
  ****************************************************************************/
 
 var room = window.location.hash;
-if (room === '') {
+if (!room) {
   serverMessage('You\'ve connected to an empty room. Please enter a room name below.');
 }
 
 var socket = io.connect();
 
-if (room !== '') {
+if (room) {
   console.log('Create or join room', room);
   console.log(room);
   socket.emit('create or join', room);
@@ -65,7 +65,7 @@ socket.on('created', function (room){
 socket.on('full', function (room){
   console.log('Room ' + room + ' is full');
   serverMessage('This room is full, please enter a different room name below.');
-  room = '';
+  room = null;
 });
 
 socket.on('join', function (room){
@@ -453,7 +453,7 @@ function sendText() {
 function onMessageKeyDown(event) {
     if (event.keyCode == 13) {
         event.preventDefault();
-        if(room === '') {
+        if(!room) {
           createRoomName();
         }
         else {
