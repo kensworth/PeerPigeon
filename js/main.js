@@ -77,7 +77,7 @@ socket.on('join', function (room){
 socket.on('joined', function (room){
   console.log('This peer has joined room ' + room);
   isChannelReady = true;
-  serverMessage('Success! Joined room at ' + window.location.host + '/' + room);
+  serverMessage('Success! Joined room at ' + window.location.hostname + '/' + room);
 });
 
 socket.on('log', function (array){
