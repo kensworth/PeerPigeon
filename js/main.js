@@ -62,8 +62,8 @@ socket.on('created', function (room){
   serverMessage('Success! Room created at ' + location.href + room);
 });
 
-socket.on('full', function (room){
-  console.log('Room ' + room + ' is full');
+socket.on('full', function (roomName){
+  console.log('Room ' + roomName + ' is full');
   serverMessage('This room is full, please enter a different room name below.');
   room = null;
 });
@@ -77,7 +77,7 @@ socket.on('join', function (room){
 socket.on('joined', function (room){
   console.log('This peer has joined room ' + room);
   isChannelReady = true;
-  serverMessage('Success! Joined room at ' + location.href);
+  serverMessage('Success! Joined room at ' + roomURL.innerHTML);
 });
 
 socket.on('log', function (array){
