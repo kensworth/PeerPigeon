@@ -11,28 +11,32 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     </head>
     <body>
-        <h1>PigeonRTC</h1>
+        <div class="content-head">
+            <h1 class="inline">PigeonRTC</h1>
 
-        <p>
-            Room URL: <br>
-            <code id="url">...</code>
-        </p>
-        <div>
-            <video id="remoteVideo" class="camera" autoplay></video>
-            <video id="localVideo" class="camera" autoplay muted></video>
+            <p class="room-data inline">
+                Room URL: <br>
+                <code id="url">...</code>
+            </p>
         </div>
-
-        <div class="chat-app">
-            <div class="chat-inner" id="chatInner">
-            <div class="chat-inner-input">
-                <ul class="chat-inner-messages list-group">
-                </ul>
+        <div class="content-body">
+            <div class="video-app">
+                <div class="video-container"><video id="remoteVideo" class="camera" autoplay></video> </div>
+                <div class="video-container"><video id="localVideo" class="camera" autoplay muted></video></div>
             </div>
+            <div class="chat-half">
+                <div class="chat-app">
+                    <div class="chat-inner" id="chatInner">
+                    <div class="chat-inner-input">
+                        <ul class="chat-inner-messages list-group">
+                        </ul>
+                    </div>
+                    </div>
+                    <input name="message" id="text" class="chat-inner-message-input form-control" placeholder="Message" autocomplete="off" autofocus></input>
+                    <button id="sendText" class="chat-inner-send btn btn-primary">Send</button>
+                </div>
             </div>
-            <input name="message" id="text" class="chat-inner-message-input form-control" placeholder="Message" autocomplete="off" autofocus></input>
-            <button id="sendText" class="chat-inner-send btn btn-primary">Send</button>
         </div>
-
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/lib/adapter.js"></script>
         <script src="js/main.js"></script>
