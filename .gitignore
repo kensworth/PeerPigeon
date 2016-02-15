@@ -1,4 +1,3 @@
 node_modules
 devnotes.txt
-oldserver.js
-oldmain.js
+server.js

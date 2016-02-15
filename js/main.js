@@ -4,7 +4,6 @@
  ****************************************************************************/
 
 var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
-// {"url":"stun:stun.services.mozilla.com"}
 
 roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
