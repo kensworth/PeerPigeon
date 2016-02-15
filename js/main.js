@@ -3,7 +3,11 @@
  * Initial setup
  ****************************************************************************/
 
-var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
+var configuration = {
+  'iceServers': [
+    {'url': 'stun:stun.l.google.com:19302'}
+  ]
+};
 
 roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
@@ -25,9 +29,7 @@ var remoteStream;
 var turnReady;
 
 var pc_config = {
-  'iceServers': [
-    {'url': 'stun:stun.l.google.com:19302'}
-  ]
+  //insert twilio turn
 };
 
 var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};

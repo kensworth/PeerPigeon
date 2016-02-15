@@ -6,10 +6,12 @@ var app = http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(process.env.PORT || 2014);
 
-var accountSid = 'AC96e808622112b3e41b1ab52c08c1e01c';
-var authToken = "ef378d3b08f32d6d738fb8d5479ebb5a";
+var env = require('node-env-file');
+var accountSid = process.env.accountSid;
+var authToken = process.env.authToken;
 var client = require('twilio')(accountSid, authToken);
 
+env('./.env');
 client.tokens.create({}, function(err, token) {
     process.stdout.write(token.username);
     console.log(token.ice_servers);

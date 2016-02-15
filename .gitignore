@@ -1,4 +1,3 @@
 node_modules
 devnotes.txt
-server.js
-
+.env

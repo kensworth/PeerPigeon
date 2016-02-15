@@ -24,6 +24,7 @@
     "socket.io": "~0.9.16",
     "express": "~3.4.0",
     "xkcd-password": "^1.2.0",
-    "twilio": "~3.3.0-edge"
+    "twilio": "~3.3.0-edge",
+    "node-env-file": "0.1.8"
   }
 }
