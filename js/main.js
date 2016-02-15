@@ -157,10 +157,6 @@ getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
 
-/*if (location.hostname != "localhost") {
-  requestTurn('');
-}*/
-
 function maybeStart() {
   if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
     createPeerConnection();
@@ -269,34 +265,6 @@ function setLocalAndSendMessage(sessionDescription) {
   pc.setLocalDescription(sessionDescription);
   console.log('setLocalAndSendMessage sending message' , sessionDescription);
   sendMessage(sessionDescription);
-}
-
-function requestTurn(turn_url) {
-  var turnExists = false;
-  for (var i in pc_config.iceServers) {
-    if (pc_config.iceServers[i].url.substr(0, 5) === 'turn:') {
-      turnExists = true;
-      turnReady = true;
-      break;
-    }
-  }
-  if (!turnExists) {
-    console.log('Getting TURN server from ', turn_url);
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        var turnServer = JSON.parse(xhr.responseText);
-        console.log('Got TURN server: ', turnServer);
-        pc_config.iceServers.push({
-          'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
-          'credential': turnServer.password
-        });
-        turnReady = true;
-      }
-    };
-    xhr.open('GET', turn_url, true);
-    xhr.send();
-  }
 }
 
 function handleRemoteStreamAdded(event) {
