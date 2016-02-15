@@ -3,13 +3,7 @@
  * Initial setup
  ****************************************************************************/
 
-var configuration = {
-  'iceServers': [
-    {'url': 'stun:stun.l.google.com:19302'}
-  ]
-},
-
-roomURL = document.getElementById('url'),
+var roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
 localVideo = document.getElementById('localVideo'),
 trail = document.getElementById('trail'),
@@ -180,9 +174,9 @@ var dataChannel;
 
 function onLocalSessionCreated(desc) {
     console.log('local session created:', desc);
-    peerConn.setLocalDescription(desc, function () {
-        console.log('sending local desc:', peerConn.localDescription);
-        sendMessage(peerConn.localDescription);
+    pc.setLocalDescription(desc, function () {
+        console.log('sending local desc:', pc.localDescription);
+        sendMessage(pc.localDescription);
     }, logError);
 }
 
@@ -200,7 +194,7 @@ function onDataChannelCreated(channel) {
 
 function createPeerConnection() {
   try {
-    pc = new RTCPeerConnection(configuration);
+    pc = new RTCPeerConnection(pc_config);
     pc.onicecandidate = handleIceCandidate;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
@@ -473,5 +467,9 @@ function sanitize(msg) {
     "/" : "&#x2F;"
   }
   return sanitize_replace[c]; });
+}
+
+function logError(err) {
+    console.log(err.toString(), err);
 }
 
