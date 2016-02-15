@@ -24,7 +24,11 @@ var pc;
 var remoteStream;
 var turnReady;
 
-var pc_config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+var pc_config = {
+  'iceServers': [
+    {'url': 'stun:stun.l.google.com:19302'}
+  ]
+};
 
 var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
@@ -170,6 +174,14 @@ window.onbeforeunload = function(e){
  ****************************************************************************/
 var dataChannel;
 
+function onLocalSessionCreated(desc) {
+    console.log('local session created:', desc);
+    peerConn.setLocalDescription(desc, function () {
+        console.log('sending local desc:', peerConn.localDescription);
+        sendMessage(peerConn.localDescription);
+    }, logError);
+}
+
 function onDataChannelCreated(channel) {
     console.log('onDataChannelCreated:', channel);
 
@@ -184,7 +196,7 @@ function onDataChannelCreated(channel) {
 
 function createPeerConnection() {
   try {
-    pc = new RTCPeerConnection(null);
+    pc = new RTCPeerConnection(configuration);
     pc.onicecandidate = handleIceCandidate;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
