@@ -7,7 +7,7 @@ var configuration = {
   'iceServers': [
     {'url': 'stun:stun.l.google.com:19302'}
   ]
-};
+},
 
 roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
@@ -61,8 +61,11 @@ socket.on('ipaddr', function (ipaddr) {
     updateRoomURL(ipaddr);
 });
 
-socket.on('created', function (room){
-  console.log('Created room ' + room);
+socket.on('created', function (data){
+  console.log('Created room ' + data.room);
+  pc_config = {
+    iceServers: data.ice_servers
+  };
   isInitiator = true;
   serverMessage('Success! Room created at ' + location.href + room);
 });
@@ -79,8 +82,11 @@ socket.on('join', function (room){
   isChannelReady = true;
 });
 
-socket.on('joined', function (room){
-  console.log('This peer has joined room ' + room);
+socket.on('joined', function (data){
+  console.log('This peer has joined room ' + data.room);
+  pc_config = {
+    iceServers: data.ice_servers
+  };
   isChannelReady = true;
   serverMessage('Success! Joined room at ' + window.location.hostname + '/' + room);
 });
