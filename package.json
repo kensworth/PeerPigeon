@@ -23,6 +23,7 @@
     "node-static": "~0.7.1",
     "socket.io": "~0.9.16",
     "express": "~3.4.0",
-    "xkcd-password": "^1.2.0"
+    "xkcd-password": "^1.2.0",
+    "twilio": "~3.3.0-edge"
   }
 }

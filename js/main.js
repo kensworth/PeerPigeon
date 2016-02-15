@@ -424,7 +424,7 @@ function serverMessage(message) {
 
 function createRoomName() {
     var MAX_LEN = 100;
-    var text = messageInput.value;
+    var text = sanitize(messageInput.value);
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         if(text.length < MAX_LEN) {
@@ -439,7 +439,7 @@ function createRoomName() {
 
 function sendText() {
     var CHUNK_LEN = 1000;
-    var text = messageInput.value;
+    var text = sanitize(messageInput.value);
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         if(text.length < CHUNK_LEN) {
@@ -474,5 +474,17 @@ function updateRoomURL(ipaddr) {
         url = location.protocol + '//' + ipaddr + ':2014/' + room
     }
     roomURL.innerHTML = url;
+}
+
+function sanitize(msg) {
+  msg = msg.toString();
+  return msg.replace(/[\<\>"'\/]/g,function(c) {  var sanitize_replace = {
+    "<" : "&lt;",
+    ">" : "&gt;",
+    '"' : "&quot;",
+    "'" : "&#x27;",
+    "/" : "&#x2F;"
+  }
+  return sanitize_replace[c]; });
 }
 
