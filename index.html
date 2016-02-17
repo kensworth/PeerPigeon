@@ -7,12 +7,15 @@
 
         <title>PigeonRTC</title>
         <link href="img/favicon.ico" type="image/x-icon" rel="icon" />
-        <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Karla:400,700' rel='stylesheet' type='text/css'>
+                <link rel="stylesheet" href="css/main.css">
+
     </head>
     <body>
         <div class="content-head">
-            <h1 class="inline">PigeonRTC</h1>
+
+            <div class="logo inline"><img src="img/pigeonIcon.png"/><div class="logo-title">Pigeon</div></div>
 
             <p class="room-data inline">
                 Room URL: <br>
@@ -21,8 +24,14 @@
         </div>
         <div class="content-body">
             <div class="video-app">
-                <div class="video-container"><video id="remoteVideo" class="camera" autoplay></video> </div>
-                <div class="video-container"><video id="localVideo" class="camera" autoplay muted></video></div>
+                <div class="video-container">
+                    <video id="remoteVideo" class="camera" autoplay ></video> 
+                    <!-- <img src="http://placehold.it/640x480" alt=""> -->
+                </div>
+                <div class="video-container">
+                    <video id="localVideo" class="camera" autoplay muted ></video>
+                    <!-- <img src="http://placehold.it/640x480" alt=""> -->
+                </div>
             </div>
             <div class="chat-half">
                 <div class="chat-app">
@@ -38,6 +47,7 @@
             </div>
         </div>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="js/lib/jquery.min.js" charset="utf-8"></script>
         <script src="js/lib/adapter.js"></script>
         <script src="js/main.js"></script>
     </body>

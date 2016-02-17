@@ -3,7 +3,10 @@
  * Initial setup
  ****************************************************************************/
 
-var roomURL = document.getElementById('url'),
+var configuration = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]},
+// {"url":"stun:stun.services.mozilla.com"}
+
+roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
 localVideo = document.getElementById('localVideo'),
 trail = document.getElementById('trail'),
@@ -22,9 +25,7 @@ var pc;
 var remoteStream;
 var turnReady;
 
-var pc_config = {
-  //insert twilio turn
-};
+var pc_config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
 
 var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
@@ -34,17 +35,17 @@ var sdpConstraints = {'mandatory': {
   'OfferToReceiveVideo':true }};
 
 /****************************************************************************
- * Signaling server 
+ * Signaling server
  ****************************************************************************/
 
 var room = window.location.hash;
-if (!room) {
+if (room === '') {
   serverMessage('You\'ve connected to an empty room. Please enter a room name below.');
 }
 
 var socket = io.connect();
 
-if (room) {
+if (room !== '') {
   console.log('Create or join room', room);
   console.log(room);
   socket.emit('create or join', room);
@@ -55,20 +56,16 @@ socket.on('ipaddr', function (ipaddr) {
     updateRoomURL(ipaddr);
 });
 
-socket.on('created', function (data){
-  console.log('Created room ' + data.room);
-  pc_config = {
-    iceServers: data.ice_servers
-  };
+socket.on('created', function (room){
+  console.log('Created room ' + room);
   isInitiator = true;
   serverMessage('Success! Room created at ' + location.href + room);
-  history.pushState({random: "New room"}, '', room);
 });
 
-socket.on('full', function (roomName){
-  console.log('Room ' + roomName + ' is full');
+socket.on('full', function (room){
+  console.log('Room ' + room + ' is full');
   serverMessage('This room is full, please enter a different room name below.');
-  room = null;
+  room = '';
 });
 
 socket.on('join', function (room){
@@ -77,13 +74,10 @@ socket.on('join', function (room){
   isChannelReady = true;
 });
 
-socket.on('joined', function (data){
-  console.log('This peer has joined room ' + data.room);
-  pc_config = {
-    iceServers: data.ice_servers
-  };
+socket.on('joined', function (room){
+  console.log('This peer has joined room ' + room);
   isChannelReady = true;
-  serverMessage('Success! Joined room at ' + window.location.hostname + '/' + room);
+  serverMessage('Success! Joined room at ' + location.href);
 });
 
 socket.on('log', function (array){
@@ -129,8 +123,8 @@ socket.on('message', function (message){
   }
 });
 
-/**************************************************************************** 
- * User media (webcam) 
+/****************************************************************************
+ * User media (webcam)
  ****************************************************************************/
 
 function handleUserMedia(stream) {
@@ -152,6 +146,10 @@ getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
 
+/*if (location.hostname != "localhost") {
+  requestTurn('');
+}*/
+
 function maybeStart() {
   if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
     createPeerConnection();
@@ -168,18 +166,10 @@ window.onbeforeunload = function(e){
     sendMessage('bye');
 }
 
-/**************************************************************************** 
+/****************************************************************************
  * WebRTC peer connection and data channel
  ****************************************************************************/
 var dataChannel;
-
-function onLocalSessionCreated(desc) {
-    console.log('local session created:', desc);
-    pc.setLocalDescription(desc, function () {
-        console.log('sending local desc:', pc.localDescription);
-        sendMessage(pc.localDescription);
-    }, logError);
-}
 
 function onDataChannelCreated(channel) {
     console.log('onDataChannelCreated:', channel);
@@ -195,7 +185,7 @@ function onDataChannelCreated(channel) {
 
 function createPeerConnection() {
   try {
-    pc = new RTCPeerConnection(pc_config);
+    pc = new RTCPeerConnection(null);
     pc.onicecandidate = handleIceCandidate;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
@@ -260,6 +250,34 @@ function setLocalAndSendMessage(sessionDescription) {
   pc.setLocalDescription(sessionDescription);
   console.log('setLocalAndSendMessage sending message' , sessionDescription);
   sendMessage(sessionDescription);
+}
+
+function requestTurn(turn_url) {
+  var turnExists = false;
+  for (var i in pc_config.iceServers) {
+    if (pc_config.iceServers[i].url.substr(0, 5) === 'turn:') {
+      turnExists = true;
+      turnReady = true;
+      break;
+    }
+  }
+  if (!turnExists) {
+    console.log('Getting TURN server from ', turn_url);
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var turnServer = JSON.parse(xhr.responseText);
+        console.log('Got TURN server: ', turnServer);
+        pc_config.iceServers.push({
+          'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
+          'credential': turnServer.password
+        });
+        turnReady = true;
+      }
+    };
+    xhr.open('GET', turn_url, true);
+    xhr.send();
+  }
 }
 
 function handleRemoteStreamAdded(event) {
@@ -371,7 +389,7 @@ function removeCN(sdpLines, mLineIndex) {
   return sdpLines;
 }
 
-/**************************************************************************** 
+/****************************************************************************
  * Text Messaging Functions
  ****************************************************************************/
 
@@ -406,7 +424,7 @@ function serverMessage(message) {
 
 function createRoomName() {
     var MAX_LEN = 100;
-    var text = sanitize(messageInput.value);
+    var text = messageInput.value;
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         if(text.length < MAX_LEN) {
@@ -421,7 +439,7 @@ function createRoomName() {
 
 function sendText() {
     var CHUNK_LEN = 1000;
-    var text = sanitize(messageInput.value);
+    var text = messageInput.value;
     var whiteSpaceRegEx = /^\s*$/.test(text);
     if(!whiteSpaceRegEx) {
         if(text.length < CHUNK_LEN) {
@@ -435,7 +453,7 @@ function sendText() {
 function onMessageKeyDown(event) {
     if (event.keyCode == 13) {
         event.preventDefault();
-        if(!room) {
+        if(room === '') {
           createRoomName();
         }
         else {
@@ -444,7 +462,7 @@ function onMessageKeyDown(event) {
     }
 }
 
-/**************************************************************************** 
+/****************************************************************************
  * Aux Functions
  ****************************************************************************/
 
@@ -458,52 +476,17 @@ function updateRoomURL(ipaddr) {
     roomURL.innerHTML = url;
 }
 
-function sanitize(msg) {
-  msg = msg.toString();
-  return msg.replace(/[\<\>"'\/]/g,function(c) {  var sanitize_replace = {
-    "<" : "&lt;",
-    ">" : "&gt;",
-    '"' : "&quot;",
-    "'" : "&#x27;",
-    "/" : "&#x2F;"
-  }
-  return sanitize_replace[c]; });
-}
-
-function logError(err) {
-    console.log(err.toString(), err);
-}
-
 /****************************************************************************
  * Styling jQuery
  ****************************************************************************/
 
 $(document).ready(function() {
-  elementSizing();
-});
-
-$(window).on('resize', function(){
-  elementSizing();
-
-});
-
-function elementSizing() {
+    console.log("jquery");
     var sw = $(window).width();
     var sh = $(window).height();
     var margin = 20;
-    var headHeight = 90;
 
-    $('video, .video-container img').css({
-      "height": (sh - (3*margin) - headHeight)/2 + "px",
-      "width": (1+ (1/3))*(sh - (3*margin) - headHeight)/2 + "px",
-    });
-    $('.chat-half').css("height", (sh - 2*margin - 34 - headHeight) + "px");
+    $('video').css("height", (sh - (3*margin))/2 + "px");
+    $('.chat-half').css("height", (sh - 2*margin - 34) + "px");
 
-    if($('.video-app').width() < (2*margin) + $('.video-container video').width() ) {
-      $('video, .video-container img').css({
-        "width":"100%",
-        "height":"auto"
-      });
-    }
-}
-
+});
