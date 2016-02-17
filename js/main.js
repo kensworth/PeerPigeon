@@ -62,6 +62,7 @@ socket.on('created', function (data){
   };
   isInitiator = true;
   serverMessage('Success! Room created at ' + location.href + room);
+  history.pushState({random: "New room"}, '', room);
 });
 
 socket.on('full', function (roomName){
@@ -471,5 +472,38 @@ function sanitize(msg) {
 
 function logError(err) {
     console.log(err.toString(), err);
+}
+
+/****************************************************************************
+ * Styling jQuery
+ ****************************************************************************/
+
+$(document).ready(function() {
+  elementSizing();
+});
+
+$(window).on('resize', function(){
+  elementSizing();
+
+});
+
+function elementSizing() {
+    var sw = $(window).width();
+    var sh = $(window).height();
+    var margin = 20;
+    var headHeight = 90;
+
+    $('video, .video-container img').css({
+      "height": (sh - (3*margin) - headHeight)/2 + "px",
+      "width": (1+ (1/3))*(sh - (3*margin) - headHeight)/2 + "px",
+    });
+    $('.chat-half').css("height", (sh - 2*margin - 34 - headHeight) + "px");
+
+    if($('.video-app').width() < (2*margin) + $('.video-container video').width() ) {
+      $('video, .video-container img').css({
+        "width":"100%",
+        "height":"auto"
+      });
+    }
 }
 
