@@ -61,7 +61,7 @@ socket.on('created', function (data){
     iceServers: data.ice_servers
   };
   isInitiator = true;
-  serverMessage('Success! Room created at ' + location.href + room);
+  serverMessage('Success! Room created at ' + location.host +"/"+ room);
   history.pushState({random: "New room"}, '', room);
 });
 
@@ -377,15 +377,24 @@ function removeCN(sdpLines, mLineIndex) {
 
 function addMessage(message, self) {
     var messageList = document.querySelector(".chat-inner-messages");
+    var lastMessage = $('.chat-inner-messages').children('li').last();
+    console.log(lastMessage);
 
     var newMessage = document.createElement("li");
-    newMessage.classList.add(".item");
+    newMessage.classList.add("item");
+    newMessage.innerHTML = "";
 
     if (self) {
       newMessage.classList.add("self");
-      newMessage.innerHTML = "<span class='badge'>You</span><p>" + message + "</p>";
+      if(!lastMessage.hasClass('self') || lastMessage.hasClass('server-message')) {
+         newMessage.innerHTML = "<span class='badge'>You</span>"
+      } 
+      newMessage.innerHTML += "<p>" + message + "</p>";
     } else {
-      newMessage.innerHTML = "<span class='badge'>" + 'friend' + "</span><p>" + message.data + "</p>"
+      if(lastMessage.hasClass('self') || lastMessage.hasClass('server-message') ) {
+        newMessage.innerHTML = "<span class='badge'>" + 'friend' + "</span>";
+      }
+        newMessage.innerHTML +=  "<p>" + message.data + "</p>";
     }
 
     messageList.appendChild(newMessage);
@@ -396,7 +405,7 @@ function addMessage(message, self) {
 function serverMessage(message) {
   var messageList = document.querySelector(".chat-inner-messages");
   var newMessage = document.createElement("li");
-  newMessage.classList.add(".item");
+  newMessage.classList.add("server-message");
 
   newMessage.innerHTML = "<span class='badge'>" + 'Message from Server' + "</span><p><b>" + message + "</b></p>"
   messageList.appendChild(newMessage);
@@ -491,7 +500,7 @@ function elementSizing() {
     var sw = $(window).width();
     var sh = $(window).height();
     var margin = 20;
-    var headHeight = 90;
+    var headHeight = 78;
 
     $('video, .video-container img').css({
       "height": (sh - (3*margin) - headHeight)/2 + "px",
