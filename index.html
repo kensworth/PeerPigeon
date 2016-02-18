@@ -5,14 +5,25 @@
         <meta name="description" content="WebRTC based P2P communication" />
         <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-        <title>PigeonRTC</title>
+        <title>PeerPigeon</title>
         <link href="img/favicon.ico" type="image/x-icon" rel="icon" />
-        <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Karla:400,700' rel='stylesheet' type='text/css'>
+                <link rel="stylesheet" href="css/main.css">
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-61805851-2', 'auto');
+          ga('send', 'pageview');
+        </script>
     </head>
     <body>
         <div class="content-head">
-            <h1 class="inline">PigeonRTC</h1>
+
+            <div class="logo inline"><img src="img/pigeonIcon.png"/><div class="logo-title">PeerPigeon</div></div>
 
             <p class="room-data inline">
                 Room URL: <br>
@@ -21,8 +32,14 @@
         </div>
         <div class="content-body">
             <div class="video-app">
-                <div class="video-container"><video id="remoteVideo" class="camera" autoplay></video> </div>
-                <div class="video-container"><video id="localVideo" class="camera" autoplay muted></video></div>
+                <div class="video-container">
+                    <video id="remoteVideo" class="camera" autoplay ></video> 
+                    <!-- <img src="http://placehold.it/640x480" alt=""> -->
+                </div>
+                <div class="video-container">
+                    <video id="localVideo" class="camera" autoplay muted ></video>
+                    <!-- <img src="http://placehold.it/640x480" alt=""> -->
+                </div>
             </div>
             <div class="chat-half">
                 <div class="chat-app">
@@ -38,6 +55,7 @@
             </div>
         </div>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="js/lib/jquery.min.js" charset="utf-8"></script>
         <script src="js/lib/adapter.js"></script>
         <script src="js/main.js"></script>
     </body>
