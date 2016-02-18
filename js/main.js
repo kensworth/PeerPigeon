@@ -84,6 +84,7 @@ socket.on('joined', function (data){
   };
   isChannelReady = true;
   serverMessage('Success! Joined room at ' + window.location.hostname + '/' + room);
+  history.pushState({random: "New room"}, '', room);
 });
 
 socket.on('log', function (array){
