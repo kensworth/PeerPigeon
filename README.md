@@ -1,3 +1,3 @@
 # PigeonRTC
 <h3> Real time video, chat, and P2P file transfer using WebRTC </h3>
-<img src="https://weirdspace.dk/HannaBarbera/Graphics/YankeeDoodlePigeon.gif"/>
+To use this app, simply navigate to [PigeonRTC](https://pigeonrtc.herokuapp.com) and create a room name in the chat window. All the other peer needs to do is copy the room link into their own browser, or type the room name into their chat window.
