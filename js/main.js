@@ -62,6 +62,7 @@ socket.on('created', function (data){
   };
   isInitiator = true;
   serverMessage('Success! Room created at ' + location.host +"/"+ room);
+  updateRoomURL();
   history.pushState({random: "New room"}, '', room);
 });
 
@@ -84,6 +85,7 @@ socket.on('joined', function (data){
   };
   isChannelReady = true;
   serverMessage('Success! Joined room at ' + window.location.hostname + '/' + room);
+  updateRoomURL();
   history.pushState({random: "New room"}, '', room);
 });
 
@@ -421,7 +423,6 @@ function createRoomName() {
     if(!whiteSpaceRegEx) {
         if(text.length < MAX_LEN) {
             room = '#' + text;
-            roomURL.innerHTML = location.href + room;
             socket.emit('create or join', room);
             getUserMedia(constraints, handleUserMedia, handleUserMediaError);
             document.getElementById('text').value = '';
@@ -461,9 +462,9 @@ function onMessageKeyDown(event) {
 function updateRoomURL(ipaddr) {
     var url;
     if (!ipaddr) {
-        url = location.href
+        url = location.host +"/"+ room;
     } else {
-        url = location.protocol + '//' + ipaddr + ':2014/' + room
+        url = location.protocol + '//' + ipaddr + ':2014/' + room;
     }
     roomURL.innerHTML = url;
 }
