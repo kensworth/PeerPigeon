@@ -71,8 +71,8 @@ li {
 }
 
 .chat-inner {
-    background: #ddd;
-
+    background: rgba(0,0,0,0.05);
+    
     padding: 15px;
     overflow: auto;
     height:100%;
@@ -110,7 +110,7 @@ ul.chat-inner-messages {
 }
 
 ul.chat-inner-messages li p {
-    font-size: 16px;
+    font-size: 13px;
     margin: 5px 0 0;
 }
 
@@ -155,9 +155,9 @@ ul.chat-inner-messages li.self {
     padding-right: 20px;
 }
 .content-head {
-    padding: 20px;
+padding: 14px 20px;
     position: relative;
-    height: 90px;
+    height: 78px;
 }
 
 .room-data {
@@ -169,6 +169,11 @@ ul.chat-inner-messages li.self {
 
 .form-control {
     border-radius:0 !important;
+    color: #222;
+    background-color: rgba(0,0,0,00);
+    background-image: none;
+    border: none;
+    border-bottom: 3px solid black;
 }
 
 .form-control:focus {
@@ -182,7 +187,7 @@ ul.chat-inner-messages li.self {
 }
 
 
-@media screen and (max-width: 1280px){
+@media screen and (max-width: 1300px){
     .content-body,.content-head  {
         max-width: 94rem;
         margin-right: auto;
