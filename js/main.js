@@ -2,7 +2,7 @@
 /****************************************************************************
  * Initial setup
  ****************************************************************************/
-if(window.location.protocol == "http:")window.location.replace(window.location.href.replace("http:","https:"));
+if(window.location.protocol == "http:" && !location.hostname.match(/localhost|127\.0\.0/))window.location.replace(window.location.href.replace("http:","https:"));
 
 var roomURL = document.getElementById('url'),
 remoteVideo = document.getElementById('remoteVideo'),
