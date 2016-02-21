@@ -798,6 +798,7 @@ function elementSizing() {
         "width":"100%",
         "height":"auto"
       });
+      $('.chat-half').css("height",$('video').height()*2 - 34 + margin +"px");
     }
 }
 
