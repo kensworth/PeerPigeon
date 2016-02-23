@@ -44,9 +44,6 @@ var timestampStart;
 var statsInterval = null;
 var bitrateMax = 0;
 
-//fileInput.addEventListener('change', createConnection, false);
-//end filesharing
-
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener('keydown', onMessageKeyDown);
 
@@ -255,6 +252,8 @@ function createPeerConnection() {
 		pc.onicecandidate = handleIceCandidate;
 		pc.onaddstream = handleRemoteStreamAdded;
 		pc.onremovestream = handleRemoteStreamRemoved;
+
+		fileInput.addEventListener('change', sendData, false);
 		fileInput.disabled = true;
 		if (isInitiator) {
 			console.log('Creating Data Channel');
@@ -270,7 +269,6 @@ function createPeerConnection() {
 		} else {
 			console.log('Not Initiator');
 			pc.ondatachannel = function (event) {
-				console.log('ondatachannel:', event.channel);
 				dataChannel = event.channel;
 				onDataChannelCreated(dataChannel);
 			};
@@ -539,6 +537,7 @@ function sendData() {
 		var reader = new window.FileReader();
 		reader.onload = (function() {
 			return function(e) {
+				//some if sendchannel == null clause needed
 				sendChannel.send(e.target.result);
 				if (file.size > offset + e.target.result.byteLength) {
 					window.setTimeout(sliceFile, 0, offset + chunkSize);
