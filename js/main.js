@@ -664,9 +664,9 @@ function onReceiveMessageCallback(event) {
 function onSendChannelStateChange() {
 	var readyState = sendChannel.readyState;
 	trace('Send channel state is: ' + readyState);
-	if (readyState === 'open') {
-		sendData();
-	}
+	// if (readyState === 'open') {
+	// 	sendData();
+	// }
 }
 
 function onReceiveChannelStateChange() {
