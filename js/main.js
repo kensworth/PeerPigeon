@@ -156,6 +156,7 @@ socket.on('message', function (message){
     });
     pc.addIceCandidate(candidate);
   } else if (message === 'bye' && isStarted) {
+    serverMessage('Client has closed the connection.');
     handleRemoteHangup();
   }
 });
@@ -196,7 +197,7 @@ function maybeStart() {
 }
 
 window.onbeforeunload = function(e){
-    sendMessage('bye');
+  sendMessage('bye');
 }
 
 /**************************************************************************** 
@@ -245,6 +246,7 @@ function createPeerConnection() {
         };
     }
     console.log('Created RTCPeerConnnection');
+    serverMessage('Created RTCPeerConnnection');
   } catch (e) {
     console.log('Failed to create PeerConnection, exception: ' + e.message);
     console.log('Cannot create RTCPeerConnection object.');
@@ -263,12 +265,6 @@ function handleIceCandidate(event) {
   } else {
     console.log('End of candidates.');
   }
-}
-
-function handleRemoteStreamAdded(event) {
-  console.log('Remote stream added.');
-  remoteVideo.src = window.URL.createObjectURL(event.stream);
-  remoteStream = event.stream;
 }
 
 function handleCreateOfferError(event){
@@ -295,6 +291,7 @@ function setLocalAndSendMessage(sessionDescription) {
 
 function handleRemoteStreamAdded(event) {
   console.log('Remote stream added.');
+  serverMessage('Streaming Video');
   remoteVideo.src = window.URL.createObjectURL(event.stream);
   remoteStream = event.stream;
 }
@@ -307,6 +304,7 @@ function hangup() {
   console.log('Hanging up.');
   stop();
   sendMessage('bye');
+  //serverMessage('Client has closed the connection.');
 }
 
 function handleRemoteHangup() {
