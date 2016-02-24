@@ -254,7 +254,7 @@ function createPeerConnection() {
 		pc.onremovestream = handleRemoteStreamRemoved;
 
 		fileInput.addEventListener('change', sendData, false);
-		fileInput.disabled = true;
+		//fileInput.disabled = true;
 		if (isInitiator) {
 			console.log('Creating Data Channel');
 			dataChannel = pc.createDataChannel("media");
