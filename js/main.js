@@ -44,6 +44,7 @@ var timestampStart;
 var statsInterval = null;
 var bitrateMax = 0;
 
+fileInput.disabled = true;
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener('keydown', onMessageKeyDown);
 
@@ -222,27 +223,21 @@ function onDataChannelCreated(channel) {
 		}
 	}
 	else if(channel.label == 'sendDataChannel') {
-		if(isInitiator) {
-			sendChannel.onopen = onSendChannelStateChange;
-  		sendChannel.onclose = onSendChannelStateChange;
-		}
-		else {
-			trace('Receive Channel Callback');
-		  receiveChannel = event.channel;
-		  receiveChannel.binaryType = 'arraybuffer';
-		  receiveChannel.onmessage = onReceiveMessageCallback;
-		  receiveChannel.onopen = onReceiveChannelStateChange;
-		  receiveChannel.onclose = onReceiveChannelStateChange;
+		trace('Receive Channel Callback');
+	  receiveChannel = event.channel;
+	  receiveChannel.binaryType = 'arraybuffer';
+	  receiveChannel.onmessage = onReceiveMessageCallback;
+	  receiveChannel.onopen = onReceiveChannelStateChange;
+	  receiveChannel.onclose = onReceiveChannelStateChange;
 
-		  receivedSize = 0;
-		  bitrateMax = 0;
-		  downloadAnchor.textContent = '';
-		  downloadAnchor.removeAttribute('download');
-		  if (downloadAnchor.href) {
-		    URL.revokeObjectURL(downloadAnchor.href);
-		    downloadAnchor.removeAttribute('href');
-		  }
-		}
+	  receivedSize = 0;
+	  bitrateMax = 0;
+	  downloadAnchor.textContent = '';
+	  downloadAnchor.removeAttribute('download');
+	  if (downloadAnchor.href) {
+	    URL.revokeObjectURL(downloadAnchor.href);
+	    downloadAnchor.removeAttribute('href');
+	  }
 	}
 }
 
@@ -254,7 +249,7 @@ function createPeerConnection() {
 		pc.onremovestream = handleRemoteStreamRemoved;
 
 		fileInput.addEventListener('change', sendData, false);
-		//fileInput.disabled = true;
+		fileInput.disabled = false;
 		if (isInitiator) {
 			console.log('Creating Data Channel');
 			dataChannel = pc.createDataChannel("media");
@@ -641,6 +636,7 @@ function onReceiveMessageCallback(event) {
 		var received = new window.Blob(receiveBuffer);
 		receiveBuffer = [];
 
+		console.log('receiving file!');
 		downloadAnchor.href = URL.createObjectURL(received);
 		downloadAnchor.download = file.name;
 		downloadAnchor.textContent =
