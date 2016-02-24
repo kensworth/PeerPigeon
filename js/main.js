@@ -214,31 +214,33 @@ function onLocalSessionCreated(desc) {
 function onDataChannelCreated(channel) {
 	console.log('onDataChannelCreated:', channel);
 
-	if(channel.label == 'media') {
 		channel.onopen = function () {
 			console.log('channel opened!');
 		};
 		channel.onmessage = function(message) {
-			addMessage(message);
-		}
-	}
-	else if(channel.label == 'sendDataChannel') {
-		trace('Receive Channel Callback');
-	  receiveChannel = event.channel;
-	  receiveChannel.binaryType = 'arraybuffer';
-	  receiveChannel.onmessage = onReceiveMessageCallback;
-	  receiveChannel.onopen = onReceiveChannelStateChange;
-	  receiveChannel.onclose = onReceiveChannelStateChange;
+			if(typeof message.data === "string") {
+				console.log('type: string');
+				addMessage(message);
+			}
+			else {
+				if(sender) {
+					/* in original, fileinput onchange (does that include when you receive?) creates new RTCconnection. on sendChannel open, sendData() is called. ondatachannel callback for receiver calls receiveChannelCallback, which sets the onopen, close, message for the receiving channel. 
+					*/
+				}
+				else {
+					onReceiveMessageCallback(message);
 
-	  receivedSize = 0;
-	  bitrateMax = 0;
-	  downloadAnchor.textContent = '';
-	  downloadAnchor.removeAttribute('download');
-	  if (downloadAnchor.href) {
-	    URL.revokeObjectURL(downloadAnchor.href);
-	    downloadAnchor.removeAttribute('href');
-	  }
-	}
+					receivedSize = 0;
+				  bitrateMax = 0;
+				  downloadAnchor.textContent = '';
+				  downloadAnchor.removeAttribute('download');
+				  if (downloadAnchor.href) {
+				    URL.revokeObjectURL(downloadAnchor.href);
+				    downloadAnchor.removeAttribute('href');
+				  }
+				}
+			}
+		}
 }
 
 function createPeerConnection() {
@@ -263,9 +265,18 @@ function createPeerConnection() {
 			pc.createOffer(onLocalSessionCreated, logError);
 		} else {
 			console.log('Not Initiator');
+			//need to connect to data channel. maybe don't have initiator logic?
 			pc.ondatachannel = function (event) {
-				dataChannel = event.channel;
-				onDataChannelCreated(dataChannel);
+				if(event.channel.label === 'media') {
+					console.log('MEDIA EVENT!!!');
+					dataChannel = event.channel;
+					onDataChannelCreated(dataChannel);
+				}
+				else if (event.channel.label === 'sendDataChannel') {
+					console.log('SEND DATA CHANNEL EVENT!!!');
+					sendChannel = event.channel;
+					onDataChannelCreated(sendChannel);
+				}
 			};
 		}
 		console.log('Created RTCPeerConnnection');
@@ -533,6 +544,7 @@ function sendData() {
 		reader.onload = (function() {
 			return function(e) {
 				//some if sendchannel == null clause needed
+				console.log(sendChannel);
 				sendChannel.send(e.target.result);
 				if (file.size > offset + e.target.result.byteLength) {
 					window.setTimeout(sliceFile, 0, offset + chunkSize);
@@ -655,14 +667,6 @@ function onReceiveMessageCallback(event) {
 
 		closeDataChannels();
 	}
-}
-
-function onSendChannelStateChange() {
-	var readyState = sendChannel.readyState;
-	trace('Send channel state is: ' + readyState);
-	// if (readyState === 'open') {
-	// 	sendData();
-	// }
 }
 
 function onReceiveChannelStateChange() {
