@@ -37,6 +37,7 @@ var pcConstraint;
 
 var receiveBuffer = [];
 var receivedSize = 0;
+var sender = false;
 
 var bytesPrev = 0;
 var timestampPrev = 0;
@@ -224,11 +225,11 @@ function onDataChannelCreated(channel) {
 			}
 			else {
 				if(sender) {
-					/* in original, fileinput onchange (does that include when you receive?) creates new RTCconnection. on sendChannel open, sendData() is called. ondatachannel callback for receiver calls receiveChannelCallback, which sets the onopen, close, message for the receiving channel. 
-					*/
+					sender = false;
 				}
 				else {
 					onReceiveMessageCallback(message);
+					onReceiveChannelStateChange;
 
 					receivedSize = 0;
 				  bitrateMax = 0;
@@ -250,6 +251,7 @@ function createPeerConnection() {
 		pc.onaddstream = handleRemoteStreamAdded;
 		pc.onremovestream = handleRemoteStreamRemoved;
 
+		//does this trigger on receiving?
 		fileInput.addEventListener('change', sendData, false);
 		fileInput.disabled = false;
 		if (isInitiator) {
@@ -523,6 +525,8 @@ function onCreateSessionDescriptionError(error) {
 }
 
 function sendData() {
+	console.log('CHANGE in fileinput');
+	sender = true;
 	var file = fileInput.files[0];
 	trace('file is ' + [file.name, file.size, file.type,
 			file.lastModifiedDate].join(' '));
