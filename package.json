@@ -20,7 +20,7 @@
   "author": "Kenneth Zhang",
   "license": "MIT",
   "dependencies": {
-    "express": "~3.4.0",
+    "express": "~4.13.4",
     "node-env-file": "0.1.8",
     "node-static": "~0.7.1",
     "socket.io": "~0.9.16",
