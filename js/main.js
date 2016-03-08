@@ -480,28 +480,29 @@ function serverMessage(message) {
 
 function createRoomName() {
 	var MAX_LEN = 100;
-	var text = sanitize(messageInput.value);
-	var whiteSpaceRegEx = /^\s*$/.test(text);
-	if(!whiteSpaceRegEx) {
-		if(text.length < MAX_LEN) {
-				room = '#' + text;
-				socket.emit('create or join', room);
-				getUserMedia(constraints, handleUserMedia, handleUserMediaError);
-				document.getElementById('text').value = '';
-		}
+	var text = sanitize(messageInput.value).trim();
+	if(/^[-a-z0-9]+$/i.test(text) && text.length < MAX_LEN) {
+		room = '#' + text;
+		socket.emit('create or join', room);
+		getUserMedia(constraints, handleUserMedia, handleUserMediaError);
+		document.getElementById('text').value = '';
+
+	} else {
+		serverMessage("Invalid room name.");
 	}
+	
 }
 
 function sendText() {
 	var CHUNK_LEN = 1000;
-	var text = sanitize(messageInput.value);
-	var whiteSpaceRegEx = /^\s*$/.test(text);
-	if(!whiteSpaceRegEx) {
-		if(text.length < CHUNK_LEN) {
-				dataChannel.send(text);
-				addMessage(text, true);
-				document.getElementById('text').value = '';
-		}
+	var text = sanitize(messageInput.value).trim();
+	if(!text) return;
+	if(text.length < CHUNK_LEN) {
+		dataChannel.send(text);
+		addMessage(text, true);
+		document.getElementById('text').value = '';
+	} else {
+		serverMessage("Message was not sent because it was too long.");
 	}
 }
 
