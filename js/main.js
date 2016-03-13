@@ -29,7 +29,6 @@ var remoteStream;
 var turnReady;
 
 //filesharing
-var localConnection;
 var remoteConnection;
 var sendChannel;
 var receiveChannel;
@@ -222,26 +221,20 @@ function onDataChannelCreated(channel) {
 		}
 	}
 	else if(channel.label == 'sendDataChannel') {
-		if(isInitiator) {
-			sendChannel.onopen = onSendChannelStateChange;
-  			sendChannel.onclose = onSendChannelStateChange;
-		}
-		else {
-			trace('Receive Channel Callback');
-			receiveChannel = event.channel;
-			receiveChannel.binaryType = 'arraybuffer';
-			receiveChannel.onmessage = onReceiveMessageCallback;
-			receiveChannel.onopen = onReceiveChannelStateChange;
-			receiveChannel.onclose = onReceiveChannelStateChange;
+		trace('Receive Channel Callback');
+		receiveChannel = event.channel;
+		receiveChannel.binaryType = 'arraybuffer';
 
-			receivedSize = 0;
-			bitrateMax = 0;
-			downloadAnchor.textContent = '';
-			downloadAnchor.removeAttribute('download');
-			if (downloadAnchor.href) {
-				URL.revokeObjectURL(downloadAnchor.href);
-				downloadAnchor.removeAttribute('href');
-			}
+		// how come peer 1 doesn't get receivemessagecallback?
+		receiveChannel.onmessage = onReceiveMessageCallback;
+
+		receivedSize = 0;
+		bitrateMax = 0;
+		downloadAnchor.textContent = '';
+		downloadAnchor.removeAttribute('download');
+		if (downloadAnchor.href) {
+			URL.revokeObjectURL(downloadAnchor.href);
+			downloadAnchor.removeAttribute('href');
 		}
 	}
 }
@@ -268,8 +261,13 @@ function createPeerConnection() {
 		} else {
 			console.log('Not Initiator');
 			pc.ondatachannel = function (event) {
-				sendChannel = event.channel;
-				onDataChannelCreated(sendChannel);
+				console.log('EVENT**************************')
+				console.dir(event);
+				if(event.channel.label == 'sendDataChannel') {
+					console.log('Setting event channel to send channel')
+					sendChannel = event.channel;
+				}
+				onDataChannelCreated(event.channel);
 			};
 		}
 		console.log('Created RTCPeerConnnection');
@@ -512,10 +510,6 @@ function onMessageKeyDown(event) {
 /**************************************************************************** 
  * File Transfer
  ****************************************************************************/
-function onCreateSessionDescriptionError(error) {
-	trace('Failed to create session description: ' + error.toString());
-}
-
 function sendData() {
 	var file = fileInput.files[0];
 	trace('file is ' + [file.name, file.size, file.type,
@@ -527,7 +521,7 @@ function sendData() {
 	if (file.size === 0) {
 		bitrateDiv.innerHTML = '';
 		statusMessage.textContent = 'File is empty, please select a non-empty file';
-		closeDataChannels();
+		//closeDataChannels();
 		return;
 	}
 	sendProgress.max = file.size;
@@ -553,60 +547,15 @@ function sendData() {
 
 function closeDataChannels() {
 	trace('Closing data channels');
-	sendChannel.close();
 	trace('Closed data channel with label: ' + sendChannel.label);
 	if (receiveChannel) {
 		receiveChannel.close();
 		trace('Closed data channel with label: ' + receiveChannel.label);
 	}
-	localConnection.close();
-	remoteConnection.close();
-	localConnection = null;
-	remoteConnection = null;
 	trace('Closed peer connections');
 
 	// re-enable the file select
 	fileInput.disabled = false;
-}
-
-function gotDescription1(desc) {
-	localConnection.setLocalDescription(desc);
-	trace('Offer from localConnection \n' + desc.sdp);
-	remoteConnection.setRemoteDescription(desc);
-	remoteConnection.createAnswer(gotDescription2,
-			onCreateSessionDescriptionError);
-}
-
-function gotDescription2(desc) {
-	remoteConnection.setLocalDescription(desc);
-	trace('Answer from remoteConnection \n' + desc.sdp);
-	localConnection.setRemoteDescription(desc);
-}
-
-function iceCallback1(event) {
-	trace('local ice callback');
-	if (event.candidate) {
-		remoteConnection.addIceCandidate(event.candidate,
-				onAddIceCandidateSuccess, onAddIceCandidateError);
-		trace('Local ICE candidate: \n' + event.candidate.candidate);
-	}
-}
-
-function iceCallback2(event) {
-	trace('remote ice callback');
-	if (event.candidate) {
-		localConnection.addIceCandidate(event.candidate,
-				onAddIceCandidateSuccess, onAddIceCandidateError);
-		trace('Remote ICE candidate: \n ' + event.candidate.candidate);
-	}
-}
-
-function onAddIceCandidateSuccess() {
-	trace('AddIceCandidate success.');
-}
-
-function onAddIceCandidateError(error) {
-	trace('Failed to add Ice Candidate: ' + error.toString());
 }
 
 function receiveChannelCallback(event) {
@@ -614,8 +563,6 @@ function receiveChannelCallback(event) {
 	receiveChannel = event.channel;
 	receiveChannel.binaryType = 'arraybuffer';
 	receiveChannel.onmessage = onReceiveMessageCallback;
-	receiveChannel.onopen = onReceiveChannelStateChange;
-	receiveChannel.onclose = onReceiveChannelStateChange;
 
 	receivedSize = 0;
 	bitrateMax = 0;
@@ -628,6 +575,7 @@ function receiveChannelCallback(event) {
 }
 
 function onReceiveMessageCallback(event) {
+	console.log('Receive Message Callback')
 	// trace('Received Message ' + event.data.byteLength);
 	receiveBuffer.push(event.data);
 	receivedSize += event.data.byteLength;
@@ -636,8 +584,9 @@ function onReceiveMessageCallback(event) {
 
 	// we are assuming that our signaling protocol told
 	// about the expected file size (and name, hash, etc).
-	var file = fileInput.files[0];
-	if (receivedSize === file.size) {
+	var file = event.data;
+	console.dir(file);
+	if (0) {
 		var received = new window.Blob(receiveBuffer);
 		receiveBuffer = [];
 
@@ -657,27 +606,7 @@ function onReceiveMessageCallback(event) {
 			statsInterval = null;
 		}
 
-		closeDataChannels();
-	}
-}
-
-function onSendChannelStateChange() {
-	var readyState = sendChannel.readyState;
-	trace('Send channel state is: ' + readyState);
-	// if (readyState === 'open') {
-	// 	sendData();
-	// }
-}
-
-function onReceiveChannelStateChange() {
-	var readyState = receiveChannel.readyState;
-	trace('Receive channel state is: ' + readyState);
-	if (readyState === 'open') {
-		timestampStart = (new Date()).getTime();
-		timestampPrev = timestampStart;
-		statsInterval = window.setInterval(displayStats, 500);
-		window.setTimeout(displayStats, 100);
-		window.setTimeout(displayStats, 300);
+		//closeDataChannels();
 	}
 }
 
