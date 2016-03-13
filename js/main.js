@@ -37,7 +37,6 @@ var pcConstraint;
 
 var receiveBuffer = [];
 var receivedSize = 0;
-var sender = false;
 
 var bytesPrev = 0;
 var timestampPrev = 0;
@@ -45,7 +44,6 @@ var timestampStart;
 var statsInterval = null;
 var bitrateMax = 0;
 
-fileInput.disabled = true;
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener('keydown', onMessageKeyDown);
 
@@ -178,7 +176,7 @@ function handleUserMediaError(error){
 	console.log('getUserMedia error: ', error);
 }
 
-var constraints = {video: true, audio: true};
+var constraints = {video: true/*, audio: true*/};
 getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
@@ -215,33 +213,37 @@ function onLocalSessionCreated(desc) {
 function onDataChannelCreated(channel) {
 	console.log('onDataChannelCreated:', channel);
 
+	if(channel.label == 'media') {
 		channel.onopen = function () {
 			console.log('channel opened!');
 		};
 		channel.onmessage = function(message) {
-			if(typeof message.data === "string") {
-				console.log('type: string');
-				addMessage(message);
-			}
-			else {
-				if(sender) {
-					sender = false;
-				}
-				else {
-					onReceiveMessageCallback(message);
-					onReceiveChannelStateChange;
+			addMessage(message);
+		}
+	}
+	else if(channel.label == 'sendDataChannel') {
+		if(isInitiator) {
+			sendChannel.onopen = onSendChannelStateChange;
+  			sendChannel.onclose = onSendChannelStateChange;
+		}
+		else {
+			trace('Receive Channel Callback');
+			receiveChannel = event.channel;
+			receiveChannel.binaryType = 'arraybuffer';
+			receiveChannel.onmessage = onReceiveMessageCallback;
+			receiveChannel.onopen = onReceiveChannelStateChange;
+			receiveChannel.onclose = onReceiveChannelStateChange;
 
-					receivedSize = 0;
-				  bitrateMax = 0;
-				  downloadAnchor.textContent = '';
-				  downloadAnchor.removeAttribute('download');
-				  if (downloadAnchor.href) {
-				    URL.revokeObjectURL(downloadAnchor.href);
-				    downloadAnchor.removeAttribute('href');
-				  }
-				}
+			receivedSize = 0;
+			bitrateMax = 0;
+			downloadAnchor.textContent = '';
+			downloadAnchor.removeAttribute('download');
+			if (downloadAnchor.href) {
+				URL.revokeObjectURL(downloadAnchor.href);
+				downloadAnchor.removeAttribute('href');
 			}
 		}
+	}
 }
 
 function createPeerConnection() {
@@ -251,9 +253,7 @@ function createPeerConnection() {
 		pc.onaddstream = handleRemoteStreamAdded;
 		pc.onremovestream = handleRemoteStreamRemoved;
 
-		//does this trigger on receiving?
 		fileInput.addEventListener('change', sendData, false);
-		fileInput.disabled = false;
 		if (isInitiator) {
 			console.log('Creating Data Channel');
 			dataChannel = pc.createDataChannel("media");
@@ -261,24 +261,15 @@ function createPeerConnection() {
 
 			//file channel
 			sendChannel = pc.createDataChannel('sendDataChannel');
-  		onDataChannelCreated(sendChannel);
+  			onDataChannelCreated(sendChannel);
 
 			console.log('Creating an offer');
 			pc.createOffer(onLocalSessionCreated, logError);
 		} else {
 			console.log('Not Initiator');
-			//need to connect to data channel. maybe don't have initiator logic?
 			pc.ondatachannel = function (event) {
-				if(event.channel.label === 'media') {
-					console.log('MEDIA EVENT!!!');
-					dataChannel = event.channel;
-					onDataChannelCreated(dataChannel);
-				}
-				else if (event.channel.label === 'sendDataChannel') {
-					console.log('SEND DATA CHANNEL EVENT!!!');
-					sendChannel = event.channel;
-					onDataChannelCreated(sendChannel);
-				}
+				sendChannel = event.channel;
+				onDataChannelCreated(sendChannel);
 			};
 		}
 		console.log('Created RTCPeerConnnection');
@@ -526,8 +517,6 @@ function onCreateSessionDescriptionError(error) {
 }
 
 function sendData() {
-	console.log('CHANGE in fileinput');
-	sender = true;
 	var file = fileInput.files[0];
 	trace('file is ' + [file.name, file.size, file.type,
 			file.lastModifiedDate].join(' '));
@@ -549,7 +538,6 @@ function sendData() {
 		reader.onload = (function() {
 			return function(e) {
 				//some if sendchannel == null clause needed
-				console.log(sendChannel);
 				sendChannel.send(e.target.result);
 				if (file.size > offset + e.target.result.byteLength) {
 					window.setTimeout(sliceFile, 0, offset + chunkSize);
@@ -653,7 +641,6 @@ function onReceiveMessageCallback(event) {
 		var received = new window.Blob(receiveBuffer);
 		receiveBuffer = [];
 
-		console.log('receiving file!');
 		downloadAnchor.href = URL.createObjectURL(received);
 		downloadAnchor.download = file.name;
 		downloadAnchor.textContent =
@@ -672,6 +659,14 @@ function onReceiveMessageCallback(event) {
 
 		closeDataChannels();
 	}
+}
+
+function onSendChannelStateChange() {
+	var readyState = sendChannel.readyState;
+	trace('Send channel state is: ' + readyState);
+	// if (readyState === 'open') {
+	// 	sendData();
+	// }
 }
 
 function onReceiveChannelStateChange() {
@@ -801,4 +796,3 @@ function elementSizing() {
 		$('.chat-half').css("height",$('video').height()*2 - 34 + margin +"px");
 	}
 }
-
