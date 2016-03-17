@@ -468,7 +468,7 @@
 	}
 
 	function logError(err) {
-			console.log(err.toString(), err);
+		console.log(err.toString(), err);
 	}
 
 	/****************************************************************************
@@ -481,7 +481,6 @@
 
 	$(window).on('resize', function(){
 		elementSizing();
-
 	});
 
 	function elementSizing() {
