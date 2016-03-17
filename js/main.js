@@ -11,15 +11,7 @@ localVideo = document.getElementById('localVideo'),
 trail = document.getElementById('trail'),
 chatInner = document.getElementById('chatInner'),
 messageInput = document.getElementById('text'),
-sendTextBtn = document.getElementById('sendText'),
-//filesharing
-bitrateDiv = document.querySelector('div#bitrate'),
-fileInput = document.querySelector('input#fileInput'),
-downloadAnchor = document.querySelector('a#download'),
-sendProgress = document.querySelector('progress#sendProgress'),
-receiveProgress = document.querySelector('progress#receiveProgress'),
-statusMessage = document.querySelector('span#status');
-//end filesharing
+sendTextBtn = document.getElementById('sendText');
 
 var isChannelReady;
 var isInitiator = false;
@@ -29,27 +21,12 @@ var pc;
 var remoteStream;
 var turnReady;
 
-//filesharing
-var remoteConnection;
-var sendChannel;
-var receiveChannel;
-var pcConstraint;
-var receiveBuffer = [];
-var receivedSize = 0;
-var bytesPrev = 0;
-var timestampPrev = 0;
-var timestampStart;
-var statsInterval = null;
-var bitrateMax = 0;
-
 sendTextBtn.addEventListener('click', sendText);
 messageInput.addEventListener('keydown', onMessageKeyDown);
 
 var pc_config = {
 	// empty object for twilio's STUN and TURN servers
 };
-
-var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
 // Set up audio and video regardless of what devices are present.
 var sdpConstraints = {'mandatory': {
@@ -148,7 +125,8 @@ socket.on('message', function (message){
 		});
 		pc.addIceCandidate(candidate);
 	} else if (message === 'bye' && isStarted) {
-		serverMessage('Client has closed the connection.');
+		serverMessage('Client has closed the connection. This room has closed. Further attempts to reconnect to room ' + room + ' will not work.');
+		remoteVideo.style.opacity = '0';
 		handleRemoteHangup();
 	}
 });
@@ -171,7 +149,7 @@ function handleUserMediaError(error){
 	console.log('getUserMedia error: ', error);
 }
 
-var constraints = {video: true/*, audio: true*/};
+var constraints = {video: true, audio: true};
 getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 console.log('Getting user media with constraints', constraints);
@@ -206,34 +184,11 @@ function onLocalSessionCreated(desc) {
 }
 
 function onDataChannelCreated(channel) {
-	console.log('onDataChannelCreated:', channel);
-
-	if(channel.label == 'media') {
-		channel.onopen = function () {
-			console.log('channel opened!');
-		};
-		channel.onmessage = function(message) {
-			addMessage(message);
-		}
-	}
-	else if(channel.label == 'sendDataChannel') {
-
-
-		// trace('Receive Channel Callback');
-		// receiveChannel = event.channel;
-		// receiveChannel.binaryType = 'arraybuffer';
-
-		// // how come peer 1 doesn't get receivemessagecallback?
-		// receiveChannel.onmessage = onReceiveMessageCallback;
-
-		// receivedSize = 0;
-		// bitrateMax = 0;
-		// downloadAnchor.textContent = '';
-		// downloadAnchor.removeAttribute('download');
-		// if (downloadAnchor.href) {
-		// 	URL.revokeObjectURL(downloadAnchor.href);
-		// 	downloadAnchor.removeAttribute('href');
-		// }
+	channel.onopen = function () {
+		console.log('channel opened!');
+	};
+	channel.onmessage = function(message) {
+		addMessage(message);
 	}
 }
 
@@ -244,27 +199,17 @@ function createPeerConnection() {
 		pc.onaddstream = handleRemoteStreamAdded;
 		pc.onremovestream = handleRemoteStreamRemoved;
 
-		fileInput.addEventListener('change', sendData, false);
 		if (isInitiator) {
 			console.log('Creating Data Channel');
 			dataChannel = pc.createDataChannel("media");
 			onDataChannelCreated(dataChannel);
-
-			//file channel
-			sendChannel = pc.createDataChannel('sendDataChannel');
-  			onDataChannelCreated(sendChannel);
 
 			console.log('Creating an offer');
 			pc.createOffer(onLocalSessionCreated, logError);
 		} else {
 			console.log('Not Initiator');
 			pc.ondatachannel = function (event) {
-				if(event.channel.label == 'sendDataChannel') {
-					sendChannel = event.channel;
-				}
-				else {
-					dataChannel = event.channel;
-				}
+				dataChannel = event.channel;
 				onDataChannelCreated(event.channel);
 			};
 		}
@@ -501,171 +446,6 @@ function onMessageKeyDown(event) {
 		}
 		else {
 			sendText();
-		}
-	}
-}
-
-/**************************************************************************** 
- * File Transfer
- ****************************************************************************/
-function sendData() {
-	//console.clear()
-	//console.assert()
-	//console.table()
-	var file = fileInput.files[0];
-
-
-
-
-	// trace('file is ' + [file.name, file.size, file.type,
-	// 		file.lastModifiedDate].join(' '));
-
-	// // Handle 0 size files.
-	// statusMessage.textContent = '';
-	// downloadAnchor.textContent = '';
-	// if (file.size === 0) {
-	// 	bitrateDiv.innerHTML = '';
-	// 	statusMessage.textContent = 'File is empty, please select a non-empty file';
-	// 	//closeDataChannels();
-	// 	return;
-	// }
-	// sendProgress.max = file.size;
-	// receiveProgress.max = file.size;
-	// var chunkSize = 16384;
-	// var sliceFile = function(offset) {
-	// 	var reader = new window.FileReader();
-	// 	reader.onload = (function() {
-	// 		return function(e) {
-	// 			//some if sendchannel == null clause needed
-	// 			sendChannel.send(e.target.result);
-	// 			if (file.size > offset + e.target.result.byteLength) {
-	// 				window.setTimeout(sliceFile, 0, offset + chunkSize);
-	// 			}
-	// 			sendProgress.value = offset + e.target.result.byteLength;
-	// 		};
-	// 	})(file);
-	// 	var slice = file.slice(offset, offset + chunkSize);
-	// 	reader.readAsArrayBuffer(slice);
-	// };
-	// sliceFile(0);
-}
-
-function closeDataChannels() {
-	trace('Closing data channels');
-	trace('Closed data channel with label: ' + sendChannel.label);
-	if (receiveChannel) {
-		receiveChannel.close();
-		trace('Closed data channel with label: ' + receiveChannel.label);
-	}
-	trace('Closed peer connections');
-
-	// re-enable the file select
-	fileInput.disabled = false;
-}
-
-function receiveChannelCallback(event) {
-	trace('Receive Channel Callback');
-	receiveChannel = event.channel;
-	receiveChannel.binaryType = 'arraybuffer';
-	receiveChannel.onmessage = onReceiveMessageCallback;
-
-	receivedSize = 0;
-	bitrateMax = 0;
-	downloadAnchor.textContent = '';
-	downloadAnchor.removeAttribute('download');
-	if (downloadAnchor.href) {
-		URL.revokeObjectURL(downloadAnchor.href);
-		downloadAnchor.removeAttribute('href');
-	}
-}
-
-function onReceiveMessageCallback(event) {
-	console.log('Receive Message Callback')
-
-
-
-	// // trace('Received Message ' + event.data.byteLength);
-	// receiveBuffer.push(event.data);
-	// receivedSize += event.data.byteLength;
-
-	// receiveProgress.value = receivedSize;
-
-	// // we are assuming that our signaling protocol told
-	// // about the expected file size (and name, hash, etc).
-	// var file = event.data;
-	// console.dir(file);
-	// if (0) {
-	// 	var received = new window.Blob(receiveBuffer);
-	// 	receiveBuffer = [];
-
-	// 	downloadAnchor.href = URL.createObjectURL(received);
-	// 	downloadAnchor.download = file.name;
-	// 	downloadAnchor.textContent =
-	// 		'Click to download \'' + file.name + '\' (' + file.size + ' bytes)';
-	// 	downloadAnchor.style.display = 'block';
-
-	// 	var bitrate = Math.round(receivedSize * 8 /
-	// 			((new Date()).getTime() - timestampStart));
-	// 	bitrateDiv.innerHTML = '<strong>Average Bitrate:</strong> ' +
-	// 			bitrate + ' kbits/sec (max: ' + bitrateMax + ' kbits/sec)';
-
-	// 	if (statsInterval) {
-	// 		window.clearInterval(statsInterval);
-	// 		statsInterval = null;
-	// 	}
-
-	// 	//closeDataChannels();
-	// }
-}
-
-// display bitrate statistics.
-function displayStats() {
-	var display = function(bitrate) {
-		bitrateDiv.innerHTML = '<strong>Current Bitrate:</strong> ' +
-				bitrate + ' kbits/sec';
-	};
-
-	if (remoteConnection &&
-			remoteConnection.iceConnectionState === 'connected') {
-		if (webrtcDetectedBrowser === 'chrome') {
-			// TODO: once https://code.google.com/p/webrtc/issues/detail?id=4321
-			// lands those stats should be preferrred over the connection stats.
-			remoteConnection.getStats(null, function(stats) {
-				for (var key in stats) {
-					var res = stats[key];
-					if (timestampPrev === res.timestamp) {
-						return;
-					}
-					if (res.type === 'googCandidatePair' &&
-							res.googActiveConnection === 'true') {
-						// calculate current bitrate
-						var bytesNow = res.bytesReceived;
-						var bitrate = Math.round((bytesNow - bytesPrev) * 8 /
-								(res.timestamp - timestampPrev));
-						display(bitrate);
-						timestampPrev = res.timestamp;
-						bytesPrev = bytesNow;
-						if (bitrate > bitrateMax) {
-							bitrateMax = bitrate;
-						}
-					}
-				}
-			});
-		} else {
-			// Firefox currently does not have data channel stats. See
-			// https://bugzilla.mozilla.org/show_bug.cgi?id=1136832
-			// Instead, the bitrate is calculated based on the number of
-			// bytes received.
-			var bytesNow = receivedSize;
-			var now = (new Date()).getTime();
-			var bitrate = Math.round((bytesNow - bytesPrev) * 8 /
-					(now - timestampPrev));
-			display(bitrate);
-			timestampPrev = now;
-			bytesPrev = bytesNow;
-			if (bitrate > bitrateMax) {
-				bitrateMax = bitrate;
-			}
 		}
 	}
 }

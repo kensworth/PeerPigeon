@@ -193,27 +193,3 @@ padding: 14px 20px;
         margin-left: auto;
     }
 }
-
-div.file-share {
-    width: 30%;
-}
-
-div#bitrate {
-  margin: 0 0 1em 0;
-}
-
-div.label {
-  display: inline-block;
-  color: black;
-  width: 8.2em;
-}
-
-form {
-  margin: 0 0 1em 0;
-  white-space: nowrap;
-}
-
-progress {
-  width: calc(100% - 8.5em);
-}
-
