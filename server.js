@@ -13,6 +13,10 @@ var authToken = process.env.TWILIO_AUTH_TOKEN;
 var client = require('twilio')(accountSid, authToken);
 
 client.tokens.create({}, function(err, token) {
+	socketOpen(err, token);
+});
+
+function socketOpen(err, token) {
 	var io = require('socket.io').listen(app);
 	io.sockets.on('connection', function (socket){
 		function log(){
@@ -62,5 +66,4 @@ client.tokens.create({}, function(err, token) {
 	        }
 	    });
 	});
-});
-
+}
