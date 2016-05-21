@@ -6,7 +6,7 @@
 	'use strict';
 	if(window.location.protocol == 'http:' && !location.hostname.match(/localhost|127\.0\.0/))window.location.replace(window.location.href.replace('http:','https:'));
 
-	var roomURL = document.getElementById('url'),
+	let roomURL = document.getElementById('url'),
 	remoteVideo = document.getElementById('remoteVideo'),
 	localVideo = document.getElementById('localVideo'),
 	trail = document.getElementById('trail'),
@@ -14,23 +14,23 @@
 	messageInput = document.getElementById('text'),
 	sendTextBtn = document.getElementById('sendText');
 
-	var isChannelReady;
-	var isInitiator = false;
-	var isStarted = false;
-	var localStream;
-	var pc;
-	var remoteStream;
-	var turnReady;
+	let isChannelReady;
+	let isInitiator = false;
+	let isStarted = false;
+	let localStream;
+	let pc;
+	let remoteStream;
+	let turnReady;
 
 	sendTextBtn.addEventListener('click', sendText);
 	messageInput.addEventListener('keydown', onMessageKeyDown);
 
-	var pc_config = {
+	let pc_config = {
 		// empty object for twilio's STUN and TURN servers
 	};
 
 	// Set up audio and video regardless of what devices are present.
-	var sdpConstraints = {'mandatory': {
+	let sdpConstraints = {'mandatory': {
 		'OfferToReceiveAudio':true,
 		'OfferToReceiveVideo':true }};
 
@@ -38,12 +38,12 @@
 	 * Signaling server 
 	 ****************************************************************************/
 
-	var room = window.location.hash;
+	let room = window.location.hash;
 	if (!room) {
 		serverMessage('You\'ve connected to an empty room. Please enter a room name below.');
 	}
 
-	var socket = io.connect();
+	let socket = io.connect();
 
 	if (room) {
 		console.log('Create or join room', room);
@@ -120,7 +120,7 @@
 		} else if (message.type === 'answer' && isStarted) {
 			pc.setRemoteDescription(new RTCSessionDescription(message));
 		} else if (message.type === 'candidate' && isStarted) {
-			var candidate = new RTCIceCandidate({
+			let candidate = new RTCIceCandidate({
 				sdpMLineIndex: message.label,
 				candidate: message.candidate
 			});
@@ -149,7 +149,7 @@
 		console.log('getUserMedia error: ', error);
 	}
 
-	var constraints = {video: true, audio: true};
+	let constraints = {video: true, audio: true};
 	getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 
 	console.log('Getting user media with constraints', constraints);
@@ -173,7 +173,7 @@
 	/**************************************************************************** 
 	 * WebRTC peer connection and data channel
 	 ****************************************************************************/
-	var dataChannel;
+	let dataChannel;
 
 	function onLocalSessionCreated(desc) {
 			console.log('local session created:', desc);
@@ -239,6 +239,10 @@
 		console.log('createOffer() error: ', e);
 	}
 
+	function handleCreateAnswerError(e) {
+		console.log('createAnswer() error: ', e)
+	}
+
 	function doCall() {
 		console.log('Sending offer to peer');
 		pc.createOffer(setLocalAndSendMessage, handleCreateOfferError);
@@ -246,8 +250,8 @@
 
 	function doAnswer() {
 		console.log('Sending answer to peer.');
-		pc.createAnswer(setLocalAndSendMessage, null, sdpConstraints);
-	}
+		pc.createAnswer(setLocalAndSendMessage, handleCreateAnswerError, sdpConstraints);
+	}	
 
 	function setLocalAndSendMessage(sessionDescription) {
 		// Set Opus as the preferred codec in SDP if Opus is present.
@@ -286,10 +290,10 @@
 
 	// Set Opus as the default audio codec if it's present.
 	function preferOpus(sdp) {
-		var sdpLines = sdp.split('\r\n');
-		var mLineIndex = null;
+		let sdpLines = sdp.split('\r\n');
+		let mLineIndex = null;
 		// Search for m line.
-		for (var i = 0; i < sdpLines.length; i++) {
+		for (let i = 0; i < sdpLines.length; i++) {
 			if (sdpLines[i].search('m=audio') !== -1) {
 				mLineIndex = i;
 				break;
@@ -300,9 +304,9 @@
 		}
 
 		// If Opus is available, set it as the default in m line.
-		for (i = 0; i < sdpLines.length; i++) {
+		for (let i = 0; i < sdpLines.length; i++) {
 			if (sdpLines[i].search('opus/48000') !== -1) {
-				var opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
+				let opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
 				if (opusPayload) {
 					sdpLines[mLineIndex] = setDefaultCodec(sdpLines[mLineIndex], opusPayload);
 				}
@@ -318,16 +322,16 @@
 	}
 
 	function extractSdp(sdpLine, pattern) {
-		var result = sdpLine.match(pattern);
+		let result = sdpLine.match(pattern);
 		return result && result.length === 2 ? result[1] : null;
 	}
 
 	// Set the selected codec to the first in m line.
 	function setDefaultCodec(mLine, payload) {
-		var elements = mLine.split(' ');
-		var newLine = [];
-		var index = 0;
-		for (var i = 0; i < elements.length; i++) {
+		let elements = mLine.split(' ');
+		let newLine = [];
+		let index = 0;
+		for (let i = 0; i < elements.length; i++) {
 			if (index === 3) { // Format of media starts from the fourth.
 				newLine[index++] = payload; // Put target payload to the first.
 			}
@@ -340,12 +344,12 @@
 
 	// Strip CN from sdp before CN constraints is ready.
 	function removeCN(sdpLines, mLineIndex) {
-		var mLineElements = sdpLines[mLineIndex].split(' ');
+		let mLineElements = sdpLines[mLineIndex].split(' ');
 		// Scan from end for the convenience of removing an item.
-		for (var i = sdpLines.length-1; i >= 0; i--) {
-			var payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
+		for (let i = sdpLines.length-1; i >= 0; i--) {
+			let payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
 			if (payload) {
-				var cnPos = mLineElements.indexOf(payload);
+				let cnPos = mLineElements.indexOf(payload);
 				if (cnPos !== -1) {
 					// Remove CN payload from m line.
 					mLineElements.splice(cnPos, 1);
@@ -364,11 +368,11 @@
 	 ****************************************************************************/
 
 	function addMessage(message, self) {
-		var messageList = document.querySelector(".chat-inner-messages");
-		var lastMessage = $('.chat-inner-messages').children('li').last();
+		let messageList = document.querySelector(".chat-inner-messages");
+		let lastMessage = $('.chat-inner-messages').children('li').last();
 		console.log(lastMessage);
 
-		var newMessage = document.createElement("li");
+		let newMessage = document.createElement("li");
 		newMessage.classList.add("item");
 		newMessage.innerHTML = "";
 
@@ -391,8 +395,8 @@
 	}
 
 	function serverMessage(message) {
-		var messageList = document.querySelector(".chat-inner-messages");
-		var newMessage = document.createElement("li");
+		let messageList = document.querySelector(".chat-inner-messages");
+		let newMessage = document.createElement("li");
 		newMessage.classList.add("server-message");
 
 		newMessage.innerHTML = "<span class='badge'>" + 'Message from Server' + "</span><p><b>" + message + "</b></p>"
@@ -402,8 +406,8 @@
 	}
 
 	function createRoomName() {
-		var MAX_LEN = 100;
-		var text = sanitize(messageInput.value).trim();
+		let MAX_LEN = 100;
+		let text = sanitize(messageInput.value).trim();
 		if(/^[-a-z0-9]+$/i.test(text) && text.length < MAX_LEN) {
 			room = '#' + text;
 			socket.emit('create or join', room);
@@ -417,8 +421,8 @@
 	}
 
 	function sendText() {
-		var CHUNK_LEN = 1000;
-		var text = sanitize(messageInput.value).trim();
+		let CHUNK_LEN = 1000;
+		let text = sanitize(messageInput.value).trim();
 		if(!text) return;
 		if(text.length < CHUNK_LEN) {
 			dataChannel.send(text);
@@ -446,7 +450,7 @@
 	 ****************************************************************************/
 
 	function updateRoomURL(ipaddr) {
-			var url;
+			let url;
 			if (!ipaddr) {
 					url = location.host +"/"+ room;
 			} else {
@@ -457,7 +461,7 @@
 
 	function sanitize(msg) {
 		msg = msg.toString();
-		return msg.replace(/[\<\>"'\/]/g,function(c) {  var sanitize_replace = {
+		return msg.replace(/[\<\>"'\/]/g,function(c) {  let sanitize_replace = {
 			"<" : "&lt;",
 			">" : "&gt;",
 			'"' : "&quot;",
@@ -484,10 +488,10 @@
 	});
 
 	function elementSizing() {
-		var sw = $(window).width();
-		var sh = $(window).height();
-		var margin = 20;
-		var headHeight = 78;
+		let sw = $(window).width();
+		let sh = $(window).height();
+		let margin = 20;
+		let headHeight = 78;
 
 		$('video, .video-container img').css({
 			"height": (sh - (3*margin) - headHeight)/2 + "px",
