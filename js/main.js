@@ -272,12 +272,6 @@
 		console.log('Remote stream removed. Event: ', event);
 	}
 
-	function hangup() {
-		console.log('Hanging up.');
-		stop();
-		sendMessage('bye');
-	}
-
 	function stop() {
 		isStarted = false;
 		pc.close();
