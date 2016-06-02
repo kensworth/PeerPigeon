@@ -37,15 +37,33 @@
 	/****************************************************************************
 	 * Signaling server 
 	 ****************************************************************************/
-
+	console.log(document.cookie);
+	let cookieExists = false;
+	let cookies = document.cookie.split('; ');
+	for(let i = 0; i < cookies.length; i++) {
+		let cookie = cookies[i].split('=');
+		if(cookie[0] === 'reloaded') {
+			cookieExists = true;
+			console.log('Cookie exists');
+			if(cookie[1] === 'false') {
+				document.cookie = 'reloaded=true';
+				console.log('Reloaded');
+				location.reload(true);
+			}
+		}
+	}
+	if(!cookieExists) {
+		console.log('Cookie does not exist');
+		document.cookie = 'reloaded=true';
+	}
 	let room = window.location.hash;
-	if (!room) {
+	if(!room) {
 		serverMessage('You\'ve connected to an empty room. Please enter a room name below.');
 	}
 
 	let socket = io.connect();
 
-	if (room) {
+	if(room) {
 		console.log('Create or join room', room);
 		console.log(room);
 		socket.emit('create or join', room);
@@ -94,7 +112,7 @@
 		console.log.apply(console, array);
 	});
 
-	if (location.hostname.match(/localhost|127\.0\.0/)) {
+	if(location.hostname.match(/localhost|127\.0\.0/)) {
 		socket.emit('ipaddr');
 	}
 
@@ -109,25 +127,27 @@
 
 	socket.on('message', function (message){
 		console.log('Client received message:', message);
-		if (message === 'got user media') {
+		if(message === 'got user media') {
 			maybeStart();
-		} else if (message.type === 'offer') {
-			if (!isInitiator && !isStarted) {
+		} else if(message.type === 'offer') {
+			if(!isInitiator && !isStarted) {
 				maybeStart();
 			}
 			pc.setRemoteDescription(new RTCSessionDescription(message));
 			doAnswer();
-		} else if (message.type === 'answer' && isStarted) {
+		} else if(message.type === 'answer' && isStarted) {
 			pc.setRemoteDescription(new RTCSessionDescription(message));
-		} else if (message.type === 'candidate' && isStarted) {
+		} else if(message.type === 'candidate' && isStarted) {
 			let candidate = new RTCIceCandidate({
 				sdpMLineIndex: message.label,
 				candidate: message.candidate
 			});
 			pc.addIceCandidate(candidate);
-		} else if (message === 'bye' && isStarted) {
+		} else if(message === 'bye' && isStarted) {
 			serverMessage('Client has closed the connection. This room has closed. Further attempts to reconnect to room ' + room + ' will not work.');
 			remoteVideo.style.opacity = '0';
+			document.cookie = 'reloaded=true';
+			location.reload(true);	
 		}
 	});
 
@@ -140,7 +160,7 @@
 		localVideo.src = window.URL.createObjectURL(stream);
 		localStream = stream;
 		sendMessage('got user media');
-		if (isInitiator) {
+		if(isInitiator) {
 			maybeStart();
 		}
 	}
@@ -155,18 +175,19 @@
 	console.log('Getting user media with constraints', constraints);
 
 	function maybeStart() {
-		if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
+		if(!isStarted && typeof localStream != 'undefined' && isChannelReady) {
 			createPeerConnection();
 			pc.addStream(localStream);
 			isStarted = true;
 			console.log('isInitiator', isInitiator);
-			if (isInitiator) {
+			if(isInitiator) {
 				doCall();
 			}
 		}
 	}
 
 	window.onbeforeunload = function(e){
+		// this sends bye even when doing a reload.
 		sendMessage('bye');
 	}
 
@@ -199,7 +220,7 @@
 			pc.onaddstream = handleRemoteStreamAdded;
 			pc.onremovestream = handleRemoteStreamRemoved;
 
-			if (isInitiator) {
+			if(isInitiator) {
 				console.log('Creating Data Channel');
 				dataChannel = pc.createDataChannel("media");
 				onDataChannelCreated(dataChannel);
@@ -224,7 +245,7 @@
 
 	function handleIceCandidate(event) {
 		console.log('handleIceCandidate event: ', event);
-		if (event.candidate) {
+		if(event.candidate) {
 			sendMessage({
 				type: 'candidate',
 				label: event.candidate.sdpMLineIndex,
@@ -272,12 +293,6 @@
 		console.log('Remote stream removed. Event: ', event);
 	}
 
-	function stop() {
-		isStarted = false;
-		pc.close();
-		pc = null;
-	}
-
 	/****************************************************************************
 	 * Audio Control
 	 ****************************************************************************/
@@ -288,20 +303,20 @@
 		let mLineIndex = null;
 		// Search for m line.
 		for (let i = 0; i < sdpLines.length; i++) {
-			if (sdpLines[i].search('m=audio') !== -1) {
+			if(sdpLines[i].search('m=audio') !== -1) {
 				mLineIndex = i;
 				break;
 			}
 		}
-		if (mLineIndex === null) {
+		if(mLineIndex === null) {
 			return sdp;
 		}
 
 		// If Opus is available, set it as the default in m line.
 		for (let i = 0; i < sdpLines.length; i++) {
-			if (sdpLines[i].search('opus/48000') !== -1) {
+			if(sdpLines[i].search('opus/48000') !== -1) {
 				let opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
-				if (opusPayload) {
+				if(opusPayload) {
 					sdpLines[mLineIndex] = setDefaultCodec(sdpLines[mLineIndex], opusPayload);
 				}
 				break;
@@ -326,10 +341,10 @@
 		let newLine = [];
 		let index = 0;
 		for (let i = 0; i < elements.length; i++) {
-			if (index === 3) { // Format of media starts from the fourth.
+			if(index === 3) { // Format of media starts from the fourth.
 				newLine[index++] = payload; // Put target payload to the first.
 			}
-			if (elements[i] !== payload) {
+			if(elements[i] !== payload) {
 				newLine[index++] = elements[i];
 			}
 		}
@@ -342,9 +357,9 @@
 		// Scan from end for the convenience of removing an item.
 		for (let i = sdpLines.length-1; i >= 0; i--) {
 			let payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
-			if (payload) {
+			if(payload) {
 				let cnPos = mLineElements.indexOf(payload);
-				if (cnPos !== -1) {
+				if(cnPos !== -1) {
 					// Remove CN payload from m line.
 					mLineElements.splice(cnPos, 1);
 				}
@@ -370,7 +385,7 @@
 		newMessage.classList.add("item");
 		newMessage.innerHTML = "";
 
-		if (self) {
+		if(self) {
 			newMessage.classList.add("self");
 			if(!lastMessage.hasClass('self') || lastMessage.hasClass('server-message')) {
 				 newMessage.innerHTML = "<span class='badge'>You</span>"
@@ -428,7 +443,7 @@
 	}
 
 	function onMessageKeyDown(event) {
-		if (event.keyCode == 13) {
+		if(event.keyCode == 13) {
 			event.preventDefault();
 			if(!room) {
 				createRoomName();
@@ -445,7 +460,7 @@
 
 	function updateRoomURL(ipaddr) {
 			let url;
-			if (!ipaddr) {
+			if(!ipaddr) {
 					url = location.host +"/"+ room;
 			} else {
 					url = location.protocol + '//' + ipaddr + ':2014/' + room;
