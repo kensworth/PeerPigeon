@@ -48,7 +48,7 @@
 			if(cookie[1] === 'false') {
 				document.cookie = 'reloaded=true';
 				console.log('Reloaded');
-				location.reload(true);
+				// location.reload(true);
 			}
 		}
 	}
@@ -80,7 +80,7 @@
 			iceServers: data.ice_servers
 		};
 		isInitiator = true;
-		serverMessage('Success! Room created at ' + location.host +"/"+ room);
+		serverMessage('Success! Room created at ' + location.host + "/" + room);
 		updateRoomURL();
 		history.pushState({random: "New room"}, '', room);
 	});
@@ -220,9 +220,11 @@
 			pc.onaddstream = handleRemoteStreamAdded;
 			pc.onremovestream = handleRemoteStreamRemoved;
 
+			//pc.onaddstream = handleConnections;
+
 			if(isInitiator) {
 				console.log('Creating Data Channel');
-				dataChannel = pc.createDataChannel("media");
+				dataChannel = pc.createDataChannel('media');
 				onDataChannelCreated(dataChannel);
 
 				console.log('Creating an offer');
@@ -293,6 +295,28 @@
 		console.log('Remote stream removed. Event: ', event);
 	}
 
+	/****************************************************************************
+	 * Testing
+	 ****************************************************************************/
+	// function handleConnections(event) {
+	// 	let hasConnected = new Promise(resolve => pc.oniceconnectionstatechange =
+	// 		e => pc.iceConnectionState == "connected" && resolve());
+
+	// 	let hasDropped = hasConnected.then(() => new Promise(resolve => {
+
+	// 		let is = (stat, type) => stat.type == type && !stat.isRemote; // skip RTCP
+	// 		let findStat = (o, type) => o[Object.keys(o).find(key => is(o[key], type))];
+
+	// 		let lastPackets = countdown = 0, timeout = 3; // seconds
+
+	// 		let iv = setInterval(() => pc.getStats().then(stats => {
+	// 			let packets = findStat(stats, "inboundrtp").packetsReceived;
+	// 			countdown = (packets - lastPackets)? timeout : countdown - 1;
+	// 			if (!countdown) resolve(clearInterval(iv)); 
+	// 			lastPackets = packets;
+	// 		}), 1000);
+	// 	}));
+	// }
 	/****************************************************************************
 	 * Audio Control
 	 ****************************************************************************/
@@ -424,7 +448,7 @@
 			document.getElementById('text').value = '';
 
 		} else {
-			serverMessage("Room names can only consist of lowercase alphanumeric characters and hyphens and must be under 100 characters long.");
+			serverMessage('Room names can only consist of lowercase alphanumeric characters and hyphens and must be under 100 characters long.');
 		}
 		
 	}
@@ -438,7 +462,7 @@
 			addMessage(text, true);
 			document.getElementById('text').value = '';
 		} else {
-			serverMessage("Message was not sent because it was too long.");
+			serverMessage('Message was not sent because it was too long.');
 		}
 	}
 
@@ -461,7 +485,7 @@
 	function updateRoomURL(ipaddr) {
 			let url;
 			if(!ipaddr) {
-					url = location.host +"/"+ room;
+					url = location.host + '/' + room;
 			} else {
 					url = location.protocol + '//' + ipaddr + ':2014/' + room;
 			}
